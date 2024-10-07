@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "gitlab-pn",
+  "description": "A simple changer",
+  "version": "1.0",
+  "icons": {
+    "16": "img/favicon.png",
+    "32": "img/favicon.png",
+    "48": "img/favicon.png",
+    "128": "img/favicon.png"
+  },
+  "action": {
+    "default_icon": {
+      "32": "img/favicon.png"
+    },
+    "default_popup": "index.html"
+  },
+  "permissions": [],
+  "commands": {}
+}
