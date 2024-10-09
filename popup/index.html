@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script type="module" crossorigin src="index.js"></script>
+    <link rel="stylesheet" crossorigin href="index.css" />
+    <title>gitlab-pn</title>
+  </head>
+  <body>
+    <h1>pn 룰</h1>
+    <p>
+      p1, p2, p3를 원하는 이모지나 텍스트로 저장하세요.
+      <br />
+      코멘트의 맨 첫 {pn} 이나 {Pn} 을 입력한 값으로 치환합니다.
+      <br />
+      <br />
+      <a
+        href="https://blog.banksalad.com/tech/banksalad-code-review-culture/"
+        target="_blank"
+      >
+        참고 링크 뱅크샐러드
+      </a>
+    </p>
+
+    <form id="form"></form>
+
+    <button type="submit" form="form">저장</button>
+
+    <datalist id="emoji-list">
+      <option value="👍"></option>
+      <option value="👎"></option>
+      <option value="🤔"></option>
+      <option value="🙏"></option>
+      <option value="😇"></option>
+      <option value="✅"></option>
+      <option value="🤬"></option>
+      <option value="❗️"></option>
+      <option value="🫡"></option>
+      <option value="🥲"></option>
+    </datalist>
+  </body>
+</html>

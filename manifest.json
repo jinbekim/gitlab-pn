@@ -10,11 +10,16 @@
     "128": "img/favicon.png"
   },
   "action": {
-    "default_icon": {
-      "32": "img/favicon.png"
-    },
-    "default_popup": "index.html"
+    "default_title": "gitlab-pn",
+    "default_icon": "img/favicon.png",
+    "default_popup": "popup/index.html"
   },
-  "permissions": [],
-  "commands": {}
+  "permissions": ["storage"],
+  "content_scripts": [
+    {
+      "matches": ["*://*/*/*/-/merge_requests/*"],
+      "js": ["inject/index.js"],
+      "run_at": "document_idle"
+    }
+  ]
 }

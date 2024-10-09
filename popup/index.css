@@ -1,0 +1,44 @@
+form {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
+form > label {
+  display: flex;
+  gap: 5px;
+  font-size: 18px;
+  font-weight: 500;
+  justify-content: space-between;
+  align-items: center;
+}
+
+label > input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+}
+
+button[form="form"] {
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-radius: 10px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+p {
+  font-size: 14px;
+  font-weight: 500;
+  color: gray;
+}
+
+a {
+  color: #007bff;
+  text-decoration: none;
+}
