@@ -1,16 +1,12 @@
-var defaultEmoji = { p1: "❗️", p2: "🤔", p3: "📝" };
 function replacePnText(emojiMap) {
   const notes = document.querySelectorAll("div.note-text.md p");
 
   notes.forEach((note) => {
-    const pnRegex = /^\s*([pP]\d)\s*[:.]/;
+    const pnRegex = /^\s*(?<rule>[pP]\d)\s*[:.]/;
     const match = note.textContent.match(pnRegex);
     if (match && match[1] && match[1].toLowerCase() in emojiMap) {
       const emoji = emojiMap[match[1].toLowerCase()];
-      note.textContent = note.textContent.replace(
-        pnRegex,
-        `${emoji || defaultEmoji[match[1].toLowerCase()]} :`
-      );
+      note.textContent = note.textContent.replace(pnRegex, `${emoji || "$<rule>"} :`);
     }
   });
 }
@@ -20,9 +16,8 @@ function init() {
   });
 }
 // MutationObserver to detect when the notes are loaded
-new MutationObserver(function (mutations) {
-  mutations.forEach(function (mutation) {
-    console.log("mutation", mutation);
+new MutationObserver((mutations) => {
+  mutations.forEach((mutation) => {
     if (mutation.type === "childList") {
       init();
     }
