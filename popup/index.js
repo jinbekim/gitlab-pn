@@ -11,7 +11,7 @@ function saveEmoji(emojiMap) {
   chrome.storage.local.set(emojiMap);
 }
 function getValues() {
-  chrome.storage.local.get().then((data) => {
+  chrome.storage.local.get(["p1", "p2", "p3"]).then((data) => {
     Object.keys(data).forEach((key) => {
       const input = document.querySelector(`[name='${key}']`);
       input.value = data[key] || "";
