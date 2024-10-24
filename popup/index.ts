@@ -1,46 +1,28 @@
-const pnRules = { p1: "필수", p2: "적극 고려", p3: "의견, 제안" };
-
 const form = document.querySelector("form");
+
 form?.addEventListener("submit", (e) => {
   e.preventDefault();
   const formData = new FormData(form);
-  const data = Object.fromEntries(formData);
-  saveEmoji(data);
+  const map: {
+    [k: string]: any;
+  } = {};
+  formData.forEach((value, key) => {
+    map[key] = value;
+  });
+  saveEmoji(map);
   window.close();
 });
-
-function saveEmoji(emojiMap) {
+function saveEmoji(emojiMap: {
+  [k: string]: any;
+}) {
   chrome.storage.local.set(emojiMap);
 }
-
 function getValues() {
-  chrome.storage.local.get().then((data) => {
-    Object.entries(pnRules).forEach(([name]) => {
-      const input = document.querySelector(`[name='${name}']`);
-      input.value = data[name] || "";
+  chrome.storage.local.get(["p1", "p2", "p3"]).then((data) => {
+    Object.keys(data).forEach((key) => {
+      const input = document.querySelector(`[name='${key}']`) as HTMLInputElement;
+      input.value = data[key] || "";
     });
   });
 }
-
-function generateLabeledInput(name, label, desc) {
-  const input = document.createElement("input");
-  input.type = "text";
-  input.name = name;
-  input.autocomplete = "off";
-  input.placeholder = "대치어 입력";
-  input.setAttribute("list", "emoji-list");
-
-  const labelElement = document.createElement("label");
-  labelElement.textContent = label + ": " + desc;
-  labelElement.appendChild(input);
-
-  return labelElement;
-}
-function appendPnInputs() {
-  Object.entries(pnRules).forEach(([name, desc]) => {
-    form?.appendChild(generateLabeledInput(name, name, desc));
-  });
-}
-
-appendPnInputs();
 getValues();
