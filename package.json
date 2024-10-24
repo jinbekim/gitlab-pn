@@ -1,8 +1,6 @@
 {
   "name": "gitlab-pn",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
   "scripts": {
     "dev": "tsc -w ./popup/index.ts ./inject/index.ts"
   },

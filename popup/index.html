@@ -23,7 +23,61 @@
       </a>
     </p>
 
-    <form id="form"></form>
+    <form id="form">
+
+      <div>
+        <span>키워드</span><span>대치어</span><span>배경색</span><span>글자색</span>
+      </div>
+
+        <div>
+          <label for="p1">p1: 필수
+          </label>
+          <input
+            type="text"
+            id="p1"
+            name="p1"
+            list="emoji-list"
+            autocomplete="off"
+            placeholder="p1"
+            maxlength="10"
+          />
+          <input type="color">
+          <input type="color">
+        </div>
+
+
+
+        <div>
+          <label for="p2">p2: 적극 고려
+          </label>
+          <input
+            type="text"
+            id="p2"
+            name="p2"
+            list="emoji-list"
+            autocomplete="off"
+            placeholder="p2"
+            maxlength="10"
+          />
+        </div>
+
+
+        <div>
+          <label for="p3">p3: 의견, 제안
+
+          </label>
+          <input
+          type="text"
+          id="p3"
+          name="p3"
+          list="emoji-list"
+          autocomplete="off"
+          placeholder="p3"
+          maxlength="10"
+        />
+        </div>
+
+    </form>
 
     <button type="submit" form="form">저장</button>
 
