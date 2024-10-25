@@ -18,7 +18,7 @@ chrome.storage.local.onChanged.addListener((changes) => {
 function replaceText(replacementMap: {
   [k: string]: any;
 }) {
-  const notes = document.querySelectorAll(".discussion-body div.note-body > div.note-text.md [data-sourcepos][dir='auto']");
+  const notes = document.querySelectorAll("div.note-body > div.note-text.md [data-sourcepos][dir='auto']");
 
   notes.forEach((note) => {
     Object.keys(replacementMap).some((key) => {
@@ -36,7 +36,7 @@ function replaceText(replacementMap: {
 function replacePnText(replacementMap: {
   [k: string]: any;
 }) {
-  const notes = document.querySelectorAll(".discussion-body div.note-body > div.note-text.md [data-sourcepos][dir='auto']");
+  const notes = document.querySelectorAll("div.note-body > div.note-text.md [data-sourcepos][dir='auto']");
 
   notes.forEach((note) => {
     const pnRegex = /\s*(?<rule>[pP]\d)\s*[:.]?/;

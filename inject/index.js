@@ -57,7 +57,7 @@ chrome.storage.local.onChanged.addListener(function (changes) {
     replacePnText(pnMap);
 });
 function replaceText(replacementMap) {
-    var notes = document.querySelectorAll(".discussion-body div.note-body > div.note-text.md [data-sourcepos][dir='auto']");
+    var notes = document.querySelectorAll("div.note-body > div.note-text.md [data-sourcepos][dir='auto']");
     notes.forEach(function (note) {
         Object.keys(replacementMap).some(function (key) {
             var _a, _b;
@@ -72,7 +72,7 @@ function replaceText(replacementMap) {
     });
 }
 function replacePnText(replacementMap) {
-    var notes = document.querySelectorAll(".discussion-body div.note-body > div.note-text.md [data-sourcepos][dir='auto']");
+    var notes = document.querySelectorAll("div.note-body > div.note-text.md [data-sourcepos][dir='auto']");
     notes.forEach(function (note) {
         var _a;
         var pnRegex = /\s*(?<rule>[pP]\d)\s*[:.]?/;
