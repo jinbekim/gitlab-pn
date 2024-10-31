@@ -1,9 +1,10 @@
-var form = document.querySelector("form");
-form === null || form === void 0 ? void 0 : form.addEventListener("submit", function (e) {
+"use strict";
+const form = document.querySelector("form");
+form?.addEventListener("submit", (e) => {
     e.preventDefault();
-    var formData = new FormData(form);
-    var map = {};
-    formData.forEach(function (value, key) {
+    const formData = new FormData(form);
+    const map = {};
+    formData.forEach((value, key) => {
         map[key] = value;
     });
     saveEmoji(map);
@@ -13,9 +14,9 @@ function saveEmoji(emojiMap) {
     chrome.storage.local.set(emojiMap);
 }
 function getValues() {
-    chrome.storage.local.get(["p1", "p2", "p3"]).then(function (data) {
-        Object.keys(data).forEach(function (key) {
-            var input = document.querySelector("[name='".concat(key, "']"));
+    chrome.storage.local.get(["p1", "p2", "p3"]).then((data) => {
+        Object.keys(data).forEach((key) => {
+            const input = document.querySelector(`[name='${key}']`);
             input.value = data[key] || "";
         });
     });

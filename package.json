@@ -2,7 +2,9 @@
   "name": "gitlab-pn",
   "version": "1.0.0",
   "scripts": {
-    "dev": "tsc -w ./popup/index.ts ./inject/index.ts"
+    "dev": "tsc --watch",
+    "type-check": "tsc --noEmit",
+    "build": "tsc"
   },
   "author": "",
   "license": "ISC",

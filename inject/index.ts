@@ -1,3 +1,5 @@
+import { escapeHtml } from "../utils/escapeHtml";
+
 let pnMap : {
   [k: string]: any;
 };
@@ -23,10 +25,10 @@ function replaceText(replacementMap: {
   notes.forEach((note) => {
     Object.keys(replacementMap).some((key) => {
       const pnRegex = new RegExp(`(?<rule>${key}) [:]`);
-      const match = note.textContent?.match(pnRegex);
-      if (match && match[1] && note.textContent) {
+      const match = note.innerHTML?.match(pnRegex);
+      if (match && match[1] && note.innerHTML) {
       const replacement = replacementMap[match[1]];
-        note.textContent = note.textContent?.replace(pnRegex, `${replacement || "$<rule>"} :`);
+        note.innerHTML = note.innerHTML?.replace(pnRegex, escapeHtml(`${replacement || "$<rule>"} :`));
       }
       return match;
     });
@@ -40,10 +42,10 @@ function replacePnText(replacementMap: {
 
   notes.forEach((note) => {
     const pnRegex = /\s*(?<rule>[pP]\d)\s*[:.]?/;
-    const match = note.textContent?.match(pnRegex);
-    if (match && match[1] && match[1].toLowerCase() in replacementMap && note.textContent) {
+    const match = note.innerHTML?.match(pnRegex);
+    if (match && match[1] && match[1].toLowerCase() in replacementMap && note.innerHTML) {
       const replacement = replacementMap[match[1].toLowerCase()];
-      note.textContent = note.textContent.replace(pnRegex, `${replacement || "$<rule>"} :`);
+      note.innerHTML = note.innerHTML.replace(pnRegex, escapeHtml(`${replacement || "$<rule>"} :`));
     }
   });
 }
