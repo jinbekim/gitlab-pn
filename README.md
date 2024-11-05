@@ -23,5 +23,4 @@ $> git clone https://github.com/jinbekim/gitlab-pn.git
   ![폴더 선택 창](/img/select.png)
 
 ### 6. 원하는 텍스트 및 이모지로 변경
-
-  ![익스텐션 UI](/img/extension.png)
+  ![익스텐션 UI](https://github.com/user-attachments/assets/fb211f48-4b82-448e-ae37-63e64bc5b307)
