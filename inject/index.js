@@ -1,46 +1,59 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const escapeHtml_1 = require("../utils/escapeHtml");
 let pnMap;
+const escapeHtml = (unsafe) => {
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+};
 chrome.storage.local.onChanged.addListener((changes) => {
-    const map = Object.entries(changes).reduce((acc, [key, { newValue, oldValue }]) => {
-        pnMap[key] = newValue || key;
-        return {
-            ...acc,
-            [oldValue || key]: newValue || key,
-        };
-    }, {});
-    replaceText(map);
-    replacePnText(pnMap);
+    const tmpMap = {};
+    Object.entries(changes).forEach(([key, change]) => {
+        pnMap[key] = change.newValue;
+        tmpMap[key] = change.newValue;
+    });
+    debugger;
+    replaceText(tmpMap);
 });
 function replaceText(replacementMap) {
-    const notes = document.querySelectorAll("div.note-body > div.note-text.md [data-sourcepos][dir='auto']");
-    notes.forEach((note) => {
-        Object.keys(replacementMap).some((key) => {
-            const pnRegex = new RegExp(`(?<rule>${key}) [:]`);
-            const match = note.innerHTML?.match(pnRegex);
-            if (match && match[1] && note.innerHTML) {
-                const replacement = replacementMap[match[1]];
-                note.innerHTML = note.innerHTML?.replace(pnRegex, (0, escapeHtml_1.escapeHtml)(`${replacement || "$<rule>"} :`));
+    const marks = document.querySelectorAll("mark[name]");
+    marks.forEach((mark) => {
+        if (!(mark instanceof HTMLElement))
+            return;
+        const rule = mark.getAttribute("name")?.toLocaleLowerCase();
+        if (!rule)
+            return;
+        for (const key of Object.keys(replacementMap)) {
+            if (key.startsWith(rule)) {
+                const replacement = escapeHtml(replacementMap[key]);
+                const bg = replacementMap[`${rule}-bg-color`];
+                const color = replacementMap[`${rule}-text-color`];
+                mark.textContent = replacement;
+                mark.style.backgroundColor = bg;
+                mark.style.color = color;
             }
-            return match;
-        });
+        }
     });
 }
 function replacePnText(replacementMap) {
     const notes = document.querySelectorAll("div.note-body > div.note-text.md [data-sourcepos][dir='auto']");
     notes.forEach((note) => {
-        const pnRegex = /\s*(?<rule>[pP]\d)\s*[:.]?/;
+        const pnRegex = /^\s*([pP]\d)\s*[:.]?/;
         const match = note.innerHTML?.match(pnRegex);
-        if (match && match[1] && match[1].toLowerCase() in replacementMap && note.innerHTML) {
-            const replacement = replacementMap[match[1].toLowerCase()];
-            note.innerHTML = note.innerHTML.replace(pnRegex, (0, escapeHtml_1.escapeHtml)(`${replacement || "$<rule>"} :`));
+        const rule = match?.[1]?.toLocaleLowerCase();
+        if (match && rule && rule in replacementMap && note.innerHTML) {
+            const replacement = escapeHtml(replacementMap[rule]);
+            const bg = replacementMap[`${rule}-bg-color`];
+            const color = replacementMap[`${rule}-text-color`];
+            note.innerHTML = note.innerHTML.replace(pnRegex, `<mark name="${rule}" style="background-color: ${bg}; color: ${color}">${replacement}</mark> :`);
         }
     });
 }
 async function init() {
     if (pnMap == null)
-        await chrome.storage.local.get(["p1", "p2", "p3"]).then((data) => {
+        await chrome.storage.local.get().then((data) => {
             pnMap = data;
         });
     return pnMap;
