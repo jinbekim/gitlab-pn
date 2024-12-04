@@ -1,14 +1,19 @@
 {
   "name": "gitlab-pn",
   "version": "1.1.0",
+  "tsup": {
+    "entry": ["popup/index.ts", "inject/index.ts"],
+    "splitting": true
+  },
   "scripts": {
-    "dev": "tsc --watch",
+    "dev": "tsup --watch",
     "type-check": "tsc --noEmit",
-    "build": "tsc"
+    "build": "tsup"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "tsup": "^8.3.5",
     "typescript": "^5.6.3"
   },
   "dependencies": {
