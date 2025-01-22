@@ -7,11 +7,12 @@ form {
   padding: 10px;
 }
 
-form > div {
+form > fieldset {
   display: grid;
   grid-template-columns: 50px 120px 50px 50px;
   gap: 10px;
   align-items: center;
+  border: none;
 
   > label {
     font-size: 1rem;

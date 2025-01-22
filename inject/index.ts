@@ -1,20 +1,18 @@
-import { escapeHtml } from "../utils/index";
+import {
+  getAllFromChromeLocalStorage,
+  getBgColorKey,
+  getReplacementKey,
+  getTextColorKey,
+  subscribeToChromeStorage,
+} from "@utils/chrome";
+import { getNotes } from "inject/domain/gitlab";
+import { escapeHtml } from "@utils/html";
+import { genMarker } from "./domain/html";
+import { findPn } from "inject/domain/regexp";
 
 let pnMap: {
   [k: string]: any;
 };
-
-chrome.storage.local.onChanged.addListener((changes) => {
-  const tmpMap: Record<string, string> = {};
-  Object.entries(changes).forEach(([key, change]) => {
-    pnMap[key] = change.newValue;
-    tmpMap[key] = change.newValue;
-  });
-
-  debugger;
-
-  replaceText(tmpMap);
-});
 
 function replaceText(replacementMap: { [k: string]: any }) {
   const marks = document.querySelectorAll("mark[name]");
@@ -38,47 +36,50 @@ function replaceText(replacementMap: { [k: string]: any }) {
 }
 
 function replacePnText(replacementMap: { [k: string]: any }) {
-  const notes = document.querySelectorAll(
-    "div.note-body > div.note-text.md [data-sourcepos][dir='auto']"
-  );
+  const notes = getNotes();
 
   notes.forEach((note) => {
-    const pnRegex = /^\s*([pP]\d)\s*[:.]?/;
-    const match = note.innerHTML?.match(pnRegex);
-    const rule = match?.[1]?.toLocaleLowerCase();
+    const pn = findPn(note.innerHTML);
 
-    if (match && rule && rule in replacementMap && note.innerHTML) {
-      const replacement = escapeHtml(replacementMap[rule]);
-      const bg = replacementMap[`${rule}-bg-color`];
-      const color = replacementMap[`${rule}-text-color`];
+    if (pn && pn in replacementMap) {
+      const replacementKey = getReplacementKey(pn);
+      const bgColorKey = getBgColorKey(pn);
+      const textColorKey = getTextColorKey(pn);
 
       note.innerHTML = note.innerHTML.replace(
-        pnRegex,
-        `<mark name="${rule}" style="background-color: ${bg}; color: ${color}">${replacement}</mark> :`
+        pn,
+        genMarker({
+          name: pn,
+          bgColor: replacementMap[bgColorKey],
+          textColor: replacementMap[textColorKey],
+          replacement: replacementMap[replacementKey],
+        })
       );
-
     }
   });
 }
 
-async function init() {
-  if (pnMap == null)
-    await chrome.storage.local.get().then((data) => {
-      pnMap = data;
-    });
-  return pnMap;
-}
 
-new MutationObserver((mutations) => {
-  init().then((_map) => {
+async function init() {
+  if (pnMap == null) pnMap ??= await getAllFromChromeLocalStorage();
+
+  subscribeToChromeStorage((changes) => {
+    const tmpMap: Record<string, string> = {};
+    Object.entries(changes).forEach(([key, change]) => {
+      pnMap[key] = change.newValue;
+      tmpMap[key] = change.newValue;
+    });
+    replaceText(tmpMap);
+  });
+
+
+  const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       if (mutation.type === "childList") {
-        replacePnText(_map);
+        replacePnText(pnMap);
       }
     });
   });
-}).observe(document.body, {
-  childList: true,
-  subtree: true,
-});
+  observer.observe(document.body, { childList: true, subtree: true });
+}
 init();

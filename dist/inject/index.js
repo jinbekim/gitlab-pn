@@ -1,24 +1,62 @@
-"use strict"; function _optionalChain(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }// utils/index.ts
-var escapeHtml = (unsafe) => {
+"use strict";
+
+// utils/chrome/index.ts
+function getAllFromChromeLocalStorage() {
+  const { promise, resolve } = Promise.withResolvers();
+  chrome.storage.local.get((data) => {
+    resolve(data);
+  });
+  return promise;
+}
+function subscribeToChromeStorage(callback) {
+  chrome.storage.onChanged.addListener(callback);
+}
+function getBgColorKey(pn) {
+  return `${pn}-bg-color`;
+}
+function getTextColorKey(pn) {
+  return `${pn}-text-color`;
+}
+function getReplacementKey(pn) {
+  return pn;
+}
+
+// inject/domain/gitlab/index.ts
+function getNotes() {
+  return document.querySelectorAll("div.note-body > div.note-text.md [data-sourcepos][dir='auto']");
+}
+
+// utils/html/index.ts
+function escapeHtml(unsafe) {
   return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-};
+}
+
+// inject/domain/html/index.ts
+function genMarker({
+  name,
+  bgColor,
+  textColor,
+  replacement
+}) {
+  return `<mark name="${name}" style="background-color: ${bgColor}; color: ${textColor}">${replacement}</mark>`;
+}
+
+// inject/domain/regexp/index.ts
+function pnRegexp() {
+  return /^\s*([pP]\d)\s*[:.]?/;
+}
+function findPn(text) {
+  const match = text.match(pnRegexp());
+  return match?.[1]?.toLocaleLowerCase();
+}
 
 // inject/index.ts
 var pnMap;
-chrome.storage.local.onChanged.addListener((changes) => {
-  const tmpMap = {};
-  Object.entries(changes).forEach(([key, change]) => {
-    pnMap[key] = change.newValue;
-    tmpMap[key] = change.newValue;
-  });
-  debugger;
-  replaceText(tmpMap);
-});
 function replaceText(replacementMap) {
   const marks = document.querySelectorAll("mark[name]");
   marks.forEach((mark) => {
     if (!(mark instanceof HTMLElement)) return;
-    const rule = _optionalChain([mark, 'access', _ => _.getAttribute, 'call', _2 => _2("name"), 'optionalAccess', _3 => _3.toLocaleLowerCase, 'call', _4 => _4()]);
+    const rule = mark.getAttribute("name")?.toLocaleLowerCase();
     if (!rule) return;
     for (const key of Object.keys(replacementMap)) {
       if (key.startsWith(rule)) {
@@ -33,41 +71,42 @@ function replaceText(replacementMap) {
   });
 }
 function replacePnText(replacementMap) {
-  const notes = document.querySelectorAll(
-    "div.note-body > div.note-text.md [data-sourcepos][dir='auto']"
-  );
+  const notes = getNotes();
   notes.forEach((note) => {
-    const pnRegex = /^\s*([pP]\d)\s*[:.]?/;
-    const match = _optionalChain([note, 'access', _5 => _5.innerHTML, 'optionalAccess', _6 => _6.match, 'call', _7 => _7(pnRegex)]);
-    const rule = _optionalChain([match, 'optionalAccess', _8 => _8[1], 'optionalAccess', _9 => _9.toLocaleLowerCase, 'call', _10 => _10()]);
-    if (match && rule && rule in replacementMap && note.innerHTML) {
-      const replacement = escapeHtml(replacementMap[rule]);
-      const bg = replacementMap[`${rule}-bg-color`];
-      const color = replacementMap[`${rule}-text-color`];
+    const pn = findPn(note.innerHTML);
+    if (pn && pn in replacementMap) {
+      const replacementKey = getReplacementKey(pn);
+      const bgColorKey = getBgColorKey(pn);
+      const textColorKey = getTextColorKey(pn);
       note.innerHTML = note.innerHTML.replace(
-        pnRegex,
-        `<mark name="${rule}" style="background-color: ${bg}; color: ${color}">${replacement}</mark> :`
+        pn,
+        genMarker({
+          name: pn,
+          bgColor: replacementMap[bgColorKey],
+          textColor: replacementMap[textColorKey],
+          replacement: replacementMap[replacementKey]
+        })
       );
     }
   });
 }
 async function init() {
-  if (pnMap == null)
-    await chrome.storage.local.get().then((data) => {
-      pnMap = data;
+  if (pnMap == null) pnMap ??= await getAllFromChromeLocalStorage();
+  subscribeToChromeStorage((changes) => {
+    const tmpMap = {};
+    Object.entries(changes).forEach(([key, change]) => {
+      pnMap[key] = change.newValue;
+      tmpMap[key] = change.newValue;
     });
-  return pnMap;
-}
-new MutationObserver((mutations) => {
-  init().then((_map) => {
+    replaceText(tmpMap);
+  });
+  const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       if (mutation.type === "childList") {
-        replacePnText(_map);
+        replacePnText(pnMap);
       }
     });
   });
-}).observe(document.body, {
-  childList: true,
-  subtree: true
-});
+  observer.observe(document.body, { childList: true, subtree: true });
+}
 init();
