@@ -8,7 +8,7 @@ import {
 import { getNotes } from "inject/domain/gitlab";
 import { escapeHtml } from "@utils/html";
 import { genMarker } from "./domain/html";
-import { findPn } from "inject/domain/regexp";
+import { findPn, isPnRule } from "inject/domain/regexp";
 
 let pnMap: {
   [k: string]: any;
@@ -16,20 +16,28 @@ let pnMap: {
 
 function replaceText(replacementMap: { [k: string]: any }) {
   const marks = document.querySelectorAll("mark[name]");
+
   marks.forEach((mark) => {
     if (!(mark instanceof HTMLElement)) return;
 
     const rule = mark.getAttribute("name")?.toLocaleLowerCase();
-    if (!rule) return;
+    if (!isPnRule(rule)) return;
 
     for (const key of Object.keys(replacementMap)) {
       if (key.startsWith(rule)) {
-        const replacement = escapeHtml(replacementMap[key]);
-        const bg = replacementMap[`${rule}-bg-color`];
-        const color = replacementMap[`${rule}-text-color`];
-        mark.textContent = replacement;
-        mark.style.backgroundColor = bg;
-        mark.style.color = color;
+        const replacementKey = getReplacementKey(rule);
+        const bgColorKey = getBgColorKey(rule);
+        const textColorKey = getTextColorKey(rule);
+
+        if (replacementMap[replacementKey]) {
+          mark.textContent = escapeHtml(replacementMap[replacementKey]);
+        }
+        if (replacementMap[bgColorKey]) {
+          mark.style.backgroundColor = replacementMap[bgColorKey];
+        }
+        if (replacementMap[textColorKey]) {
+          mark.style.color = replacementMap[textColorKey];
+        }
       }
     }
   });
@@ -59,7 +67,6 @@ function replacePnText(replacementMap: { [k: string]: any }) {
   });
 }
 
-
 async function init() {
   if (pnMap == null) pnMap ??= await getAllFromChromeLocalStorage();
 
@@ -71,7 +78,6 @@ async function init() {
     });
     replaceText(tmpMap);
   });
-
 
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
