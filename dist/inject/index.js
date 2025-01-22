@@ -49,6 +49,9 @@ function findPn(text) {
   const match = text.match(pnRegexp());
   return match?.[1]?.toLocaleLowerCase();
 }
+function isPnRule(rule = "") {
+  return pnRegexp().test(rule);
+}
 
 // inject/index.ts
 var pnMap;
@@ -57,15 +60,21 @@ function replaceText(replacementMap) {
   marks.forEach((mark) => {
     if (!(mark instanceof HTMLElement)) return;
     const rule = mark.getAttribute("name")?.toLocaleLowerCase();
-    if (!rule) return;
+    if (!isPnRule(rule)) return;
     for (const key of Object.keys(replacementMap)) {
       if (key.startsWith(rule)) {
-        const replacement = escapeHtml(replacementMap[key]);
-        const bg = replacementMap[`${rule}-bg-color`];
-        const color = replacementMap[`${rule}-text-color`];
-        mark.textContent = replacement;
-        mark.style.backgroundColor = bg;
-        mark.style.color = color;
+        const replacementKey = getReplacementKey(rule);
+        const bgColorKey = getBgColorKey(rule);
+        const textColorKey = getTextColorKey(rule);
+        if (replacementMap[replacementKey]) {
+          mark.textContent = escapeHtml(replacementMap[replacementKey]);
+        }
+        if (replacementMap[bgColorKey]) {
+          mark.style.backgroundColor = replacementMap[bgColorKey];
+        }
+        if (replacementMap[textColorKey]) {
+          mark.style.color = replacementMap[textColorKey];
+        }
       }
     }
   });
