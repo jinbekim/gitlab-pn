@@ -11,17 +11,8 @@ function getAllFromChromeLocalStorage() {
 function subscribeToChromeStorage(callback) {
   chrome.storage.onChanged.addListener(callback);
 }
-function getBgColorKey(pn) {
-  return `${pn}-bg-color`;
-}
-function getTextColorKey(pn) {
-  return `${pn}-text-color`;
-}
-function getReplacementKey(pn) {
-  return pn;
-}
 
-// inject/domain/gitlab/index.ts
+// inject/service/gitlab/index.ts
 function getNotes() {
   return document.querySelectorAll("div.note-body > div.note-text.md [data-sourcepos][dir='auto']");
 }
@@ -34,27 +25,54 @@ function escapeHtml(unsafe) {
 // inject/domain/html/index.ts
 function genMarker({
   name,
+  replacement,
   bgColor,
-  textColor,
-  replacement
+  textColor
 }) {
   return `<mark name="${name}" style="background-color: ${bgColor}; color: ${textColor}">${replacement}</mark>`;
 }
 
 // inject/domain/regexp/index.ts
 function pnRegexp() {
-  return /^\s*([pP]\d)\s*[:.]?/;
+  return /^([pP]\d)\s*[:.]?/;
 }
 function findPn(text) {
   const match = text.match(pnRegexp());
-  return match?.[1]?.toLocaleLowerCase();
+  return match?.[1];
 }
 function isPnRule(rule = "") {
   return pnRegexp().test(rule);
 }
+function isPnRuleMap(map) {
+  if (typeof map !== "object" || map === null) return false;
+  return ["p1", "p2", "p3"].every((key) => key in map);
+}
+
+// utils/debounce.ts
+function debounce(func, wait) {
+  let timeout;
+  return function(...args) {
+    const later = () => {
+      timeout = void 0;
+      func.apply(this, args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+// inject/domain/pn/index.ts
+function getBgColorKey(pn) {
+  return `${pn}-bg-color`.toLocaleLowerCase();
+}
+function getTextColorKey(pn) {
+  return `${pn}-text-color`.toLocaleLowerCase();
+}
+function getReplacementKey(pn) {
+  return pn.toLocaleLowerCase();
+}
 
 // inject/index.ts
-var pnMap;
 function replaceText(replacementMap) {
   const marks = document.querySelectorAll("mark[name]");
   marks.forEach((mark) => {
@@ -83,7 +101,7 @@ function replacePnText(replacementMap) {
   const notes = getNotes();
   notes.forEach((note) => {
     const pn = findPn(note.innerHTML);
-    if (pn && pn in replacementMap) {
+    if (pn && pn.toLowerCase() in replacementMap) {
       const replacementKey = getReplacementKey(pn);
       const bgColorKey = getBgColorKey(pn);
       const textColorKey = getTextColorKey(pn);
@@ -93,14 +111,14 @@ function replacePnText(replacementMap) {
           name: pn,
           bgColor: replacementMap[bgColorKey],
           textColor: replacementMap[textColorKey],
-          replacement: replacementMap[replacementKey]
+          replacement: escapeHtml(replacementMap[replacementKey])
         })
       );
     }
   });
 }
 async function init() {
-  if (pnMap == null) pnMap ??= await getAllFromChromeLocalStorage();
+  const pnMap = await getAllFromChromeLocalStorage();
   subscribeToChromeStorage((changes) => {
     const tmpMap = {};
     Object.entries(changes).forEach(([key, change]) => {
@@ -109,13 +127,13 @@ async function init() {
     });
     replaceText(tmpMap);
   });
-  const observer = new MutationObserver((mutations) => {
+  const observer = new MutationObserver(debounce((mutations) => {
     mutations.forEach((mutation) => {
-      if (mutation.type === "childList") {
+      if (mutation.type === "childList" && isPnRuleMap(pnMap)) {
         replacePnText(pnMap);
       }
     });
-  });
+  }, 20));
   observer.observe(document.body, { childList: true, subtree: true });
 }
 init();

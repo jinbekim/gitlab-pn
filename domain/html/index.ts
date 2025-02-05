@@ -1,15 +1,13 @@
-
-type HexaCode = `#${string}`;
 export function genMarker({
   name,
+  replacement,
   bgColor,
   textColor,
-  replacement
 }:{
   name: string;
-  bgColor: HexaCode;
-  textColor: HexaCode;
   replacement: string;
+  bgColor?: string;
+  textColor?: string;
 }) {
   return `<mark name="${name}" style="background-color: ${bgColor}; color: ${textColor}">${replacement}</mark>`;
 }

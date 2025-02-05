@@ -11,14 +11,20 @@ function getAllFromChromeLocalStorage() {
   });
   return promise;
 }
+
+// inject/domain/pn/index.ts
 function getBgColorKey(pn) {
-  return `${pn}-bg-color`;
+  return `${pn}-bg-color`.toLocaleLowerCase();
 }
 function getTextColorKey(pn) {
-  return `${pn}-text-color`;
+  return `${pn}-text-color`.toLocaleLowerCase();
 }
 function getReplacementKey(pn) {
-  return pn;
+  return pn.toLocaleLowerCase();
+}
+function isPnRuleMap(map) {
+  if (typeof map !== "object" || map === null) return false;
+  return ["p1", "p2", "p3"].every((key) => key in map);
 }
 
 // popup/index.ts
@@ -27,12 +33,14 @@ var bgColorInputs = document.querySelectorAll("[name$='-bg-color']");
 var textColorInputs = document.querySelectorAll("[name$='-text-color']");
 function getValues() {
   getAllFromChromeLocalStorage().then((data) => {
+    if (!isPnRuleMap(data)) return;
     Object.keys(data).forEach((key) => {
       const input = document.querySelector(`[name='${key}']`);
+      const pn = key;
       if (input instanceof HTMLInputElement) {
-        input.value = data[getReplacementKey(key)] || key;
-        input.style.backgroundColor = data[getBgColorKey(key)];
-        input.style.color = data[getTextColorKey(key)];
+        input.value = data[getReplacementKey(pn)] || pn;
+        input.style.backgroundColor = data[getBgColorKey(pn)] || "transparent";
+        input.style.color = data[getTextColorKey(pn)] || "black";
       }
     });
   });
