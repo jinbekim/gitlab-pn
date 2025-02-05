@@ -1,10 +1,5 @@
-import {
-  getAllFromChromeLocalStorage,
-  getBgColorKey,
-  getReplacementKey,
-  getTextColorKey,
-  saveToChromeLocalStorage,
-} from "@utils/chrome";
+import { getAllFromChromeLocalStorage, saveToChromeLocalStorage } from "@utils/chrome";
+import { getReplacementKey, getBgColorKey, getTextColorKey, isPnRuleMap, PnRule } from "@domain/pn";
 
 const form = document.querySelector("form");
 const bgColorInputs = document.querySelectorAll("[name$='-bg-color']");
@@ -12,13 +7,15 @@ const textColorInputs = document.querySelectorAll("[name$='-text-color']");
 
 function getValues() {
   getAllFromChromeLocalStorage().then((data) => {
+    if (!isPnRuleMap(data)) return;
+
     Object.keys(data).forEach((key) => {
       const input = document.querySelector(`[name='${key}']`);
-
+      const pn = key as PnRule;
       if (input instanceof HTMLInputElement) {
-        input.value = data[getReplacementKey(key)] || key;
-        input.style.backgroundColor = data[getBgColorKey(key)];
-        input.style.color = data[getTextColorKey(key)];
+        input.value = data[getReplacementKey(pn)] || pn;
+        input.style.backgroundColor = data[getBgColorKey(pn)] || "transparent";
+        input.style.color = data[getTextColorKey(pn)] || "black";
       }
     });
   });

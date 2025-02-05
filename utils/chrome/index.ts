@@ -17,15 +17,3 @@ export function subscribeToChromeStorage(
 ) {
   chrome.storage.onChanged.addListener(callback);
 }
-
-export function getBgColorKey(pn: string) {
-  return `${pn}-bg-color`;
-}
-
-export function getTextColorKey(pn: string) {
-  return `${pn}-text-color`;
-}
-
-export function getReplacementKey(pn: string) {
-  return pn;
-}

@@ -1,18 +1,18 @@
+import { genMarker } from "@domain/html";
 import {
-  getAllFromChromeLocalStorage,
+  findPn,
   getBgColorKey,
   getReplacementKey,
   getTextColorKey,
-  subscribeToChromeStorage,
-} from "@utils/chrome";
-import { getNotes } from "inject/domain/gitlab";
+  isPnRule,
+  isPnRuleMap,
+  PnRuleMapWithColor,
+  PnRuleSub,
+} from "@domain/pn";
+import { getAllFromChromeLocalStorage, subscribeToChromeStorage } from "@utils/chrome";
+import { debounce } from "@utils/debounce";
 import { escapeHtml } from "@utils/html";
-import { genMarker } from "./domain/html";
-import { findPn, isPnRule } from "inject/domain/regexp";
-
-let pnMap: {
-  [k: string]: any;
-};
+import { getNotes } from "@services/gitlab";
 
 function replaceText(replacementMap: { [k: string]: any }) {
   const marks = document.querySelectorAll("mark[name]");
@@ -43,16 +43,16 @@ function replaceText(replacementMap: { [k: string]: any }) {
   });
 }
 
-function replacePnText(replacementMap: { [k: string]: any }) {
+function replacePnText(replacementMap: PnRuleMapWithColor) {
   const notes = getNotes();
 
   notes.forEach((note) => {
     const pn = findPn(note.innerHTML);
 
-    if (pn && pn in replacementMap) {
-      const replacementKey = getReplacementKey(pn);
-      const bgColorKey = getBgColorKey(pn);
-      const textColorKey = getTextColorKey(pn);
+    if (pn && pn.toLowerCase() in replacementMap) {
+      const replacementKey = getReplacementKey(pn as PnRuleSub);
+      const bgColorKey = getBgColorKey(pn as PnRuleSub);
+      const textColorKey = getTextColorKey(pn as PnRuleSub);
 
       note.innerHTML = note.innerHTML.replace(
         pn,
@@ -60,7 +60,7 @@ function replacePnText(replacementMap: { [k: string]: any }) {
           name: pn,
           bgColor: replacementMap[bgColorKey],
           textColor: replacementMap[textColorKey],
-          replacement: replacementMap[replacementKey],
+          replacement: escapeHtml(replacementMap[replacementKey]),
         })
       );
     }
@@ -68,7 +68,7 @@ function replacePnText(replacementMap: { [k: string]: any }) {
 }
 
 async function init() {
-  if (pnMap == null) pnMap ??= await getAllFromChromeLocalStorage();
+  const pnMap = await getAllFromChromeLocalStorage();
 
   subscribeToChromeStorage((changes) => {
     const tmpMap: Record<string, string> = {};
@@ -79,13 +79,15 @@ async function init() {
     replaceText(tmpMap);
   });
 
-  const observer = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
-      if (mutation.type === "childList") {
-        replacePnText(pnMap);
-      }
-    });
-  });
+  const observer = new MutationObserver(
+    debounce((mutations: MutationRecord[]) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === "childList" && isPnRuleMap(pnMap)) {
+          replacePnText(pnMap);
+        }
+      });
+    }, 20)
+  );
   observer.observe(document.body, { childList: true, subtree: true });
 }
 init();
