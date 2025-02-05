@@ -2,7 +2,10 @@
   "name": "gitlab-pn",
   "version": "1.1.0",
   "tsup": {
-    "entry": ["popup/index.ts", "inject/index.ts"],
+    "entry": [
+      "popup/index.ts",
+      "inject/index.ts"
+    ],
     "splitting": false
   },
   "scripts": {
@@ -14,9 +17,8 @@
   "license": "ISC",
   "devDependencies": {
     "tsup": "^8.3.5",
-    "typescript": "^5.6.3"
-  },
-  "dependencies": {
+    "typescript": "^5.6.3",
+    "vitest": "^3.0.5",
     "@types/chrome": "^0.0.279"
   }
 }
