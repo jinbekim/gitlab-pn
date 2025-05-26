@@ -13,6 +13,7 @@ import { getAllFromChromeLocalStorage, subscribeToChromeStorage } from "@utils/c
 import { debounce } from "@utils/debounce";
 import { escapeHtml } from "@utils/html";
 import { getNotes } from "@services/gitlab";
+import rmMrFilter from "./rm_mr_filter";
 
 function replaceText(replacementMap: { [k: string]: any }) {
   const marks = document.querySelectorAll("mark[name]");
@@ -90,4 +91,7 @@ async function init() {
   );
   observer.observe(document.body, { childList: true, subtree: true });
 }
+
 init();
+rmMrFilter();
+

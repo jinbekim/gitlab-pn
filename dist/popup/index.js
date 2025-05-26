@@ -12,7 +12,7 @@ function getAllFromChromeLocalStorage() {
   return promise;
 }
 
-// inject/domain/pn/index.ts
+// domain/pn/index.ts
 function getBgColorKey(pn) {
   return `${pn}-bg-color`.toLocaleLowerCase();
 }

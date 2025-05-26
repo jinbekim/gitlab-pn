@@ -1,28 +1,6 @@
 "use strict";
 
-// utils/chrome/index.ts
-function getAllFromChromeLocalStorage() {
-  const { promise, resolve } = Promise.withResolvers();
-  chrome.storage.local.get((data) => {
-    resolve(data);
-  });
-  return promise;
-}
-function subscribeToChromeStorage(callback) {
-  chrome.storage.onChanged.addListener(callback);
-}
-
-// inject/service/gitlab/index.ts
-function getNotes() {
-  return document.querySelectorAll("div.note-body > div.note-text.md [data-sourcepos][dir='auto']");
-}
-
-// utils/html/index.ts
-function escapeHtml(unsafe) {
-  return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-}
-
-// inject/domain/html/index.ts
+// domain/html/index.ts
 function genMarker({
   name,
   replacement,
@@ -32,7 +10,16 @@ function genMarker({
   return `<mark name="${name}" style="background-color: ${bgColor}; color: ${textColor}">${replacement}</mark>`;
 }
 
-// inject/domain/regexp/index.ts
+// domain/pn/index.ts
+function getBgColorKey(pn) {
+  return `${pn}-bg-color`.toLocaleLowerCase();
+}
+function getTextColorKey(pn) {
+  return `${pn}-text-color`.toLocaleLowerCase();
+}
+function getReplacementKey(pn) {
+  return pn.toLocaleLowerCase();
+}
 function pnRegexp() {
   return /^([pP]\d)\s*[:.]?/;
 }
@@ -48,6 +35,18 @@ function isPnRuleMap(map) {
   return ["p1", "p2", "p3"].every((key) => key in map);
 }
 
+// utils/chrome/index.ts
+function getAllFromChromeLocalStorage() {
+  const { promise, resolve } = Promise.withResolvers();
+  chrome.storage.local.get((data) => {
+    resolve(data);
+  });
+  return promise;
+}
+function subscribeToChromeStorage(callback) {
+  chrome.storage.onChanged.addListener(callback);
+}
+
 // utils/debounce.ts
 function debounce(func, wait) {
   let timeout;
@@ -61,15 +60,91 @@ function debounce(func, wait) {
   };
 }
 
-// inject/domain/pn/index.ts
-function getBgColorKey(pn) {
-  return `${pn}-bg-color`.toLocaleLowerCase();
+// utils/html/index.ts
+function escapeHtml(unsafe) {
+  return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
-function getTextColorKey(pn) {
-  return `${pn}-text-color`.toLocaleLowerCase();
+
+// services/gitlab/index.ts
+function getNotes() {
+  return document.querySelectorAll("div.note-body > div.note-text.md [data-sourcepos][dir='auto']");
 }
-function getReplacementKey(pn) {
-  return pn.toLocaleLowerCase();
+
+// inject/rm_mr_filter/utils.ts
+function getKey() {
+  const url = new URL(window.location.href);
+  const pathname = url.pathname;
+  const [, project, ...rest] = pathname.split("/");
+  return `${project}/project-merge-request-recent-searches`;
+}
+function getFilterList() {
+  const key = getKey();
+  const value = localStorage.getItem(key);
+  if (!value) return [];
+  return JSON.parse(value);
+}
+function setFilterList(filterList) {
+  const key = getKey();
+  localStorage.setItem(key, JSON.stringify(filterList));
+}
+function removeFilterByIndex(e) {
+  const filterList = getFilterList();
+  const li = e.target.parentElement?.parentElement;
+  const siblings = li?.parentElement?.children;
+  if (!li || !siblings || siblings.length === 0) {
+    return;
+  }
+  const idx = Array.from(siblings).indexOf(li);
+  if (idx === -1) {
+    return;
+  }
+  filterList.splice(idx, 1);
+  setFilterList(filterList);
+}
+
+// inject/rm_mr_filter/RemoveButton.ts
+function RemoveButton() {
+  const removeButton = document.createElement("button");
+  removeButton.type = "button";
+  removeButton.classList.add("custom-rm-btn", "show-on-focus-or-hover--target", "transition-opacity-on-hover--target", "always-animate", "gl-absolute", "gl-right-3", "gl-top-1/2", "-gl-translate-y-1/2", "btn-default", "btn-sm", "gl-button", "btn-default-tertiary", "btn-icon");
+  removeButton.innerHTML = `
+    <svg data-testid="close-icon" role="img" aria-hidden="true" class="gl-button-icon gl-icon s16 gl-fill-current">
+      <use href="/assets/icons-1dc8580f14b5de4dcf11c6c7326e55d1b3fb7c05afa8655c3f51c47ac154a434.svg#close"></use>
+    </svg>
+  `;
+  return removeButton;
+}
+
+// inject/rm_mr_filter/index.ts
+function findAllFilter() {
+  const ul = document.querySelector("#disclosure-46");
+  if (!ul) return;
+  const li = ul.querySelectorAll("li.gl-new-dropdown-item:not(.gl-text-subtle)");
+  if (!li) return;
+  return li;
+}
+function addRemoveButtonsToFilters() {
+  const filterList = findAllFilter();
+  filterList?.forEach((filter, idx) => {
+    if (filter.querySelector(".custom-rm-btn")) {
+      return;
+    }
+    const removeButton = RemoveButton();
+    filter.appendChild(removeButton);
+    removeButton.addEventListener("click", (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      removeFilterByIndex(e);
+      filter.remove();
+    });
+  });
+}
+function rmMrFilter() {
+  const button = document.querySelector(".input-group-prepend");
+  if (!button) return;
+  const observer = new MutationObserver(addRemoveButtonsToFilters);
+  observer.observe(button, { childList: true, subtree: true });
+  addRemoveButtonsToFilters();
 }
 
 // inject/index.ts
@@ -127,13 +202,16 @@ async function init() {
     });
     replaceText(tmpMap);
   });
-  const observer = new MutationObserver(debounce((mutations) => {
-    mutations.forEach((mutation) => {
-      if (mutation.type === "childList" && isPnRuleMap(pnMap)) {
-        replacePnText(pnMap);
-      }
-    });
-  }, 20));
+  const observer = new MutationObserver(
+    debounce((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === "childList" && isPnRuleMap(pnMap)) {
+          replacePnText(pnMap);
+        }
+      });
+    }, 20)
+  );
   observer.observe(document.body, { childList: true, subtree: true });
 }
 init();
+rmMrFilter();
