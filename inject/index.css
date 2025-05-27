@@ -14,8 +14,8 @@ li[data-testid="dropdown-item"] {
   margin: 0;
   box-shadow: none;
   line-height: 1rem;
-  background-color: rgba(0,0,0,0);
+  background-color: rgb(51, 50, 56);
+  border-radius: 0.25rem;
   display: flex;
   padding: .25rem;
-  mix-blend-mode: screen;
 }
