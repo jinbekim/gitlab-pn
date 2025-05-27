@@ -74,8 +74,8 @@ function getNotes() {
 function getKey() {
   const url = new URL(window.location.href);
   const pathname = url.pathname;
-  const [, project, ...rest] = pathname.split("/");
-  return `${project}/project-merge-request-recent-searches`;
+  const [project] = pathname.split("/-/");
+  return `${project.slice(1)}-merge-request-recent-searches`;
 }
 function getFilterList() {
   const key = getKey();
@@ -106,20 +106,18 @@ function removeFilterByIndex(e) {
 function RemoveButton() {
   const removeButton = document.createElement("button");
   removeButton.type = "button";
-  removeButton.classList.add("custom-rm-btn", "show-on-focus-or-hover--target", "transition-opacity-on-hover--target", "always-animate", "gl-absolute", "gl-right-3", "gl-top-1/2", "-gl-translate-y-1/2", "btn-default", "btn-sm", "gl-button", "btn-default-tertiary", "btn-icon");
+  removeButton.classList.add("custom-rm-btn");
   removeButton.innerHTML = `
-    <svg data-testid="close-icon" role="img" aria-hidden="true" class="gl-button-icon gl-icon s16 gl-fill-current">
-      <use href="/assets/icons-1dc8580f14b5de4dcf11c6c7326e55d1b3fb7c05afa8655c3f51c47ac154a434.svg#close"></use>
-    </svg>
+<svg class="s16 close-icon"><use xlink:href="/assets/icons-0b41337f52be73f7bbf9d59b841eb98a6e790dfa1a844644f120a80ce3cc18ba.svg#close"></use></svg>
   `;
   return removeButton;
 }
 
 // inject/rm_mr_filter/index.ts
 function findAllFilter() {
-  const ul = document.querySelector("#disclosure-46");
-  if (!ul) return;
-  const li = ul.querySelectorAll("li.gl-new-dropdown-item:not(.gl-text-subtle)");
+  const parent = document.querySelector("div.filtered-search-history-dropdown");
+  if (!parent) return;
+  const li = parent.querySelectorAll('li[data-testid="dropdown-item"]:not(.gl-text-subtle)');
   if (!li) return;
   return li;
 }
@@ -140,7 +138,7 @@ function addRemoveButtonsToFilters() {
   });
 }
 function rmMrFilter() {
-  const button = document.querySelector(".input-group-prepend");
+  const button = document.querySelector("button.filtered-search-history-dropdown-toggle-button");
   if (!button) return;
   const observer = new MutationObserver(addRemoveButtonsToFilters);
   observer.observe(button, { childList: true, subtree: true });

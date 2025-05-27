@@ -17,9 +17,10 @@
   "permissions": ["storage"],
   "content_scripts": [
     {
-      "matches": ["*://*/*/*/-/merge_requests/*"],
+      "matches": ["*://*/*/*/-/merge_requests*"],
       "js": ["dist/inject/index.js"],
-      "run_at": "document_idle"
+      "run_at": "document_idle",
+      "css": ["inject/index.css"]
     }
   ]
 }

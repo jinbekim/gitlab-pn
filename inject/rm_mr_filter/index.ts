@@ -2,10 +2,10 @@ import { removeFilterByIndex } from "./utils";
 import { RemoveButton } from "./RemoveButton";
 
 function findAllFilter() {
-  const ul = document.querySelector('#disclosure-46');
-  if (!ul) return;
+  const parent = document.querySelector('div.filtered-search-history-dropdown');
+  if (!parent) return;
 
-  const li = ul.querySelectorAll('li.gl-new-dropdown-item:not(.gl-text-subtle)');
+  const li = parent.querySelectorAll('li[data-testid="dropdown-item"]:not(.gl-text-subtle)');
   if (!li) return;
 
   return li;
@@ -32,7 +32,7 @@ function addRemoveButtonsToFilters() {
 }
 
 export  default function rmMrFilter() {
-  const button = document.querySelector('.input-group-prepend');
+  const button = document.querySelector('button.filtered-search-history-dropdown-toggle-button');
   if (!button) return;
 
   const observer = new MutationObserver(addRemoveButtonsToFilters);
