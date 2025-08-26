@@ -1,5 +1,5 @@
 import { removeFilterByIndex } from "./utils";
-import { RemoveButton } from "./RemoveButton";
+import { RemoveButton } from "./ui/RemoveButton";
 
 function findAllFilter() {
   const parent = document.querySelector('div.filtered-search-history-dropdown');
