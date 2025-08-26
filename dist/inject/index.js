@@ -90,19 +90,22 @@ function setFilterList(filterList) {
 function removeFilterByIndex(e) {
   const filterList = getFilterList();
   const li = e.target.parentElement?.parentElement;
-  const siblings = li?.parentElement?.children;
-  if (!li || !siblings || siblings.length === 0) {
+  const siblings = Array.from(li?.parentElement?.children ?? []);
+  if (!li || siblings.length === 0) {
+    console.warn(`cannot find li or siblings`);
     return;
   }
-  const idx = Array.from(siblings).indexOf(li);
+  const idx = siblings.indexOf(li);
   if (idx === -1) {
+    console.warn(`cannot find index of ${li} from ${siblings}`);
     return;
   }
+  console.log(`remove filter at index ${idx}`, filterList);
   filterList.splice(idx, 1);
   setFilterList(filterList);
 }
 
-// inject/rm_mr_filter/RemoveButton.ts
+// inject/rm_mr_filter/ui/RemoveButton.ts
 function RemoveButton() {
   const removeButton = document.createElement("button");
   removeButton.type = "button";

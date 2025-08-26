@@ -33,15 +33,18 @@ export function setFilterList(filterList: FilterList) {
 export function removeFilterByIndex(e: MouseEvent) {
   const filterList = getFilterList();
   const li = (e.target as HTMLButtonElement).parentElement?.parentElement;
-  const siblings = li?.parentElement?.children;
+  const siblings = Array.from(li?.parentElement?.children ?? []);
 
-  if (!li || !siblings || siblings.length === 0) {
+  if (!li || siblings.length === 0) {
+    console.warn(`cannot find li or siblings`);
     return;
   }
-  const idx = Array.from(siblings).indexOf(li as Element);
+  const idx = siblings.indexOf(li as Element);
   if (idx === -1) {
+    console.warn(`cannot find index of ${li} from ${siblings}`);
     return;
   }
+  console.log(`remove filter at index ${idx}`, filterList);
   filterList.splice(idx, 1);
   setFilterList(filterList);
 }
