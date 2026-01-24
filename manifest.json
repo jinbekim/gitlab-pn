@@ -12,15 +12,16 @@
   "action": {
     "default_title": "gitlab-pn",
     "default_icon": "img/favicon.png",
-    "default_popup": "popup/index.html"
+    "default_popup": "src/features/popup/index.html"
   },
   "permissions": ["storage"],
+  "host_permissions": ["*://*/*/*/-/merge_requests*"],
   "content_scripts": [
     {
       "matches": ["*://*/*/*/-/merge_requests*"],
-      "js": ["dist/inject/index.js"],
+      "js": ["dist/inject/index.mjs"],
       "run_at": "document_idle",
-      "css": ["inject/index.css"]
+      "css": ["src/styles/inject.css"]
     }
   ]
 }
