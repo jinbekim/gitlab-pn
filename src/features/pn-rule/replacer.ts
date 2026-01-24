@@ -5,17 +5,16 @@ import {
   getReplacementKey,
   getTextColorKey,
   isPnRule,
-  isPnRuleMap,
   PnRuleMapWithColor,
   PnRuleSub,
 } from "@domain/pn";
-import { getAllFromChromeLocalStorage, subscribeToChromeStorage } from "@utils/chrome";
-import { debounce } from "@utils/debounce";
-import { escapeHtml } from "@utils/html";
 import { getNotes } from "@services/gitlab";
-import rmMrFilter from "./rm_mr_filter";
+import { escapeHtml } from "@utils/html";
 
-function replaceText(replacementMap: { [k: string]: any }) {
+/**
+ * Updates existing mark elements with new replacement values
+ */
+export function replaceText(replacementMap: Record<string, string>): void {
   const marks = document.querySelectorAll("mark[name]");
 
   marks.forEach((mark) => {
@@ -44,7 +43,10 @@ function replaceText(replacementMap: { [k: string]: any }) {
   });
 }
 
-function replacePnText(replacementMap: PnRuleMapWithColor) {
+/**
+ * Replaces Pn prefixes in notes with styled markers
+ */
+export function replacePnText(replacementMap: PnRuleMapWithColor): void {
   const notes = getNotes();
 
   notes.forEach((note) => {
@@ -67,31 +69,3 @@ function replacePnText(replacementMap: PnRuleMapWithColor) {
     }
   });
 }
-
-async function init() {
-  const pnMap = await getAllFromChromeLocalStorage();
-
-  subscribeToChromeStorage((changes) => {
-    const tmpMap: Record<string, string> = {};
-    Object.entries(changes).forEach(([key, change]) => {
-      pnMap[key] = change.newValue;
-      tmpMap[key] = change.newValue;
-    });
-    replaceText(tmpMap);
-  });
-
-  const observer = new MutationObserver(
-    debounce((mutations: MutationRecord[]) => {
-      mutations.forEach((mutation) => {
-        if (mutation.type === "childList" && isPnRuleMap(pnMap)) {
-          replacePnText(pnMap);
-        }
-      });
-    }, 20)
-  );
-  observer.observe(document.body, { childList: true, subtree: true });
-}
-
-init();
-rmMrFilter();
-

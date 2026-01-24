@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { escapeHtml } from "@utils/html";
-import { findPn, getBgColorKey, getReplacementKey, getTextColorKey, isPnRule } from "../pn";
+import { findPn, getBgColorKey, getReplacementKey, getTextColorKey, isPnRule } from "@domain/pn";
 import { genMarker } from "@domain/html";
 
 describe("get pn rule keyword", () => {

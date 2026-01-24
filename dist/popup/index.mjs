@@ -1,33 +1,13 @@
-"use strict";
+import {
+  getAllFromChromeLocalStorage,
+  getBgColorKey,
+  getReplacementKey,
+  getTextColorKey,
+  isPnRuleMap,
+  saveToChromeLocalStorage
+} from "../chunk-7NDE5PE2.mjs";
 
-// utils/chrome/index.ts
-function saveToChromeLocalStorage(map) {
-  chrome.storage.local.set(map);
-}
-function getAllFromChromeLocalStorage() {
-  const { promise, resolve } = Promise.withResolvers();
-  chrome.storage.local.get((data) => {
-    resolve(data);
-  });
-  return promise;
-}
-
-// domain/pn/index.ts
-function getBgColorKey(pn) {
-  return `${pn}-bg-color`.toLocaleLowerCase();
-}
-function getTextColorKey(pn) {
-  return `${pn}-text-color`.toLocaleLowerCase();
-}
-function getReplacementKey(pn) {
-  return pn.toLocaleLowerCase();
-}
-function isPnRuleMap(map) {
-  if (typeof map !== "object" || map === null) return false;
-  return ["p1", "p2", "p3"].every((key) => key in map);
-}
-
-// popup/index.ts
+// src/features/popup/index.ts
 var form = document.querySelector("form");
 var bgColorInputs = document.querySelectorAll("[name$='-bg-color']");
 var textColorInputs = document.querySelectorAll("[name$='-text-color']");
@@ -48,22 +28,22 @@ function getValues() {
 function init() {
   bgColorInputs.forEach((input) => {
     input.addEventListener("input", (e) => {
-      const input2 = e.target;
-      const name = input2.name;
+      const target = e.target;
+      const name = target.name;
       const textInput = document.querySelector(
         `[name='${name.replace("-bg-color", "")}']`
       );
-      textInput.style.backgroundColor = input2.value;
+      textInput.style.backgroundColor = target.value;
     });
   });
   textColorInputs.forEach((input) => {
     input.addEventListener("input", (e) => {
-      const input2 = e.target;
-      const name = input2.name;
+      const target = e.target;
+      const name = target.name;
       const textInput = document.querySelector(
         `[name='${name.replace("-text-color", "")}']`
       );
-      textInput.style.color = input2.value;
+      textInput.style.color = target.value;
     });
   });
   form?.addEventListener("submit", (e) => {
@@ -79,3 +59,4 @@ function init() {
 }
 getValues();
 init();
+//# sourceMappingURL=index.mjs.map
