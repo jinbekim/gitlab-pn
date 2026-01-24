@@ -159,19 +159,48 @@ function disconnectPnRuleObserver() {
 }
 
 // src/features/pn-rule/index.ts
+var STORAGE_KEY_ENABLED = "pn-rule-enabled";
 var unsubscribeStorage = null;
-async function initPnRule() {
+var isActive = false;
+async function startPnRule() {
+  if (isActive) return;
   const pnMap = await getAllFromChromeLocalStorage();
-  unsubscribeStorage = subscribeToChromeStorage((changes) => {
-    const tmpMap = {};
-    Object.entries(changes).forEach(([key, change]) => {
-      pnMap[key] = change.newValue;
-      tmpMap[key] = change.newValue;
-    });
-    replaceText(tmpMap);
-  });
   if (isPnRuleMap(pnMap)) {
     createPnRuleObserver(pnMap);
+    isActive = true;
+  }
+}
+function stopPnRule() {
+  if (!isActive) return;
+  disconnectPnRuleObserver();
+  isActive = false;
+}
+async function initPnRule() {
+  const data = await getAllFromChromeLocalStorage();
+  const pnMap = data;
+  const isEnabled = data[STORAGE_KEY_ENABLED] !== false;
+  unsubscribeStorage = subscribeToChromeStorage((changes) => {
+    if (STORAGE_KEY_ENABLED in changes) {
+      const enabled = changes[STORAGE_KEY_ENABLED].newValue !== false;
+      if (enabled) {
+        startPnRule();
+      } else {
+        stopPnRule();
+      }
+      return;
+    }
+    if (isActive) {
+      const tmpMap = {};
+      Object.entries(changes).forEach(([key, change]) => {
+        pnMap[key] = change.newValue;
+        tmpMap[key] = change.newValue;
+      });
+      replaceText(tmpMap);
+    }
+  });
+  if (isEnabled && isPnRuleMap(pnMap)) {
+    createPnRuleObserver(pnMap);
+    isActive = true;
   }
 }
 function cleanupPnRule() {
@@ -179,7 +208,7 @@ function cleanupPnRule() {
     unsubscribeStorage();
     unsubscribeStorage = null;
   }
-  disconnectPnRuleObserver();
+  stopPnRule();
 }
 
 // src/features/rm-mr-filter/utils.ts
@@ -230,6 +259,9 @@ function RemoveButton() {
 
 // src/features/rm-mr-filter/index.ts
 var OBSERVER_ID2 = "rm-mr-filter-observer";
+var STORAGE_KEY_ENABLED2 = "rm-mr-filter-enabled";
+var unsubscribeStorage2 = null;
+var isActive2 = false;
 function addRemoveButtonsToFilters() {
   const filterList = getFilterListItems();
   filterList?.forEach((filter) => {
@@ -246,7 +278,8 @@ function addRemoveButtonsToFilters() {
     });
   });
 }
-function initRmMrFilter() {
+function startRmMrFilter() {
+  if (isActive2) return;
   const button = getFilterDropdownButton();
   if (!button) return;
   createObserver({
@@ -256,15 +289,42 @@ function initRmMrFilter() {
     config: { childList: true, subtree: true }
   });
   addRemoveButtonsToFilters();
+  isActive2 = true;
+}
+function stopRmMrFilter() {
+  if (!isActive2) return;
+  disconnectObserver(OBSERVER_ID2);
+  isActive2 = false;
+}
+async function initRmMrFilter() {
+  const data = await getAllFromChromeLocalStorage();
+  const isEnabled = data[STORAGE_KEY_ENABLED2] !== false;
+  unsubscribeStorage2 = subscribeToChromeStorage((changes) => {
+    if (STORAGE_KEY_ENABLED2 in changes) {
+      const enabled = changes[STORAGE_KEY_ENABLED2].newValue !== false;
+      if (enabled) {
+        startRmMrFilter();
+      } else {
+        stopRmMrFilter();
+      }
+    }
+  });
+  if (isEnabled) {
+    startRmMrFilter();
+  }
 }
 function cleanupRmMrFilter() {
-  disconnectObserver(OBSERVER_ID2);
+  if (unsubscribeStorage2) {
+    unsubscribeStorage2();
+    unsubscribeStorage2 = null;
+  }
+  stopRmMrFilter();
 }
 
 // src/features/inject/index.ts
 async function init() {
   await initPnRule();
-  initRmMrFilter();
+  await initRmMrFilter();
 }
 function cleanup() {
   cleanupPnRule();
