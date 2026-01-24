@@ -11,7 +11,7 @@ import { initRmMrFilter, cleanupRmMrFilter } from "@features/rm-mr-filter";
  */
 async function init(): Promise<void> {
   await initPnRule();
-  initRmMrFilter();
+  await initRmMrFilter();
 }
 
 /**
