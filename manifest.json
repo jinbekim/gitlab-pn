@@ -19,7 +19,7 @@
   "content_scripts": [
     {
       "matches": ["*://*/*/*/-/merge_requests*"],
-      "js": ["dist/features/inject/index.js"],
+      "js": ["dist/inject/index.mjs"],
       "run_at": "document_idle",
       "css": ["src/styles/inject.css"]
     }
