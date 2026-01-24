@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,43 +8,71 @@
     <title>gitlab-pn</title>
   </head>
   <body>
-    <h1>pn 룰</h1>
-    <p>
-      p1, p2, p3를 원하는 이모지나 텍스트로 저장하세요.
-      <br />
-      코멘트의 맨 첫 {pn} 이나 {Pn} 을 입력한 값으로 치환합니다.
-      <br />
-      <br />
-      <a href="https://blog.banksalad.com/tech/banksalad-code-review-culture/" target="_blank">
-        참고 링크 뱅크샐러드
-      </a>
-    </p>
+    <div class="container">
+      <header class="header">
+        <div class="logo">
+          <span class="logo-icon">PN</span>
+          <h1>Priority Notes</h1>
+        </div>
+        <p class="subtitle">GitLab MR 코멘트를 더 직관적으로</p>
+      </header>
 
-    <form id="form">
-      <div><span>키워드</span><span>대치어</span><span>배경색</span><span>글자색</span></div>
+      <section class="info-card">
+        <div class="info-icon">💡</div>
+        <div class="info-content">
+          <p>P1, P2, P3 키워드를 원하는 텍스트와 색상으로 변경합니다.</p>
+          <a href="https://blog.banksalad.com/tech/banksalad-code-review-culture/" target="_blank" class="info-link">
+            뱅크샐러드 코드리뷰 문화 보기 →
+          </a>
+        </div>
+      </section>
 
-      <fieldset>
-        <label for="p1">p1</label>
-        <input type="text" id="p1" name="p1" autocomplete="off" placeholder="p1" maxlength="10" />
-        <input name="p1-bg-color" type="color" />
-        <input name="p1-text-color" type="color" />
-      </fieldset>
+      <form id="form">
+        <div class="form-header">
+          <span class="col-label">키워드</span>
+          <span class="col-label">대치어</span>
+          <span class="col-label">배경</span>
+          <span class="col-label">글자</span>
+        </div>
 
-      <fieldset>
-        <label for="p2">p2</label>
-        <input type="text" id="p2" name="p2" autocomplete="off" placeholder="p2" maxlength="10" />
-        <input name="p2-bg-color" type="color" />
-        <input name="p2-text-color" type="color" />
-      </fieldset>
+        <fieldset class="rule-item">
+          <label for="p1" class="rule-badge rule-badge--p1">P1</label>
+          <input type="text" id="p1" name="p1" autocomplete="off" placeholder="🔴 필수" maxlength="10" />
+          <div class="color-picker">
+            <input name="p1-bg-color" type="color" value="#dc2626" />
+          </div>
+          <div class="color-picker">
+            <input name="p1-text-color" type="color" value="#ffffff" />
+          </div>
+        </fieldset>
 
-      <fieldset>
-        <label for="p3">p3</label>
-        <input type="text" id="p3" name="p3" autocomplete="off" placeholder="p3" maxlength="10" />
-        <input name="p3-bg-color" type="color" />
-        <input name="p3-text-color" type="color" />
-      </fieldset>
-    </form>
+        <fieldset class="rule-item">
+          <label for="p2" class="rule-badge rule-badge--p2">P2</label>
+          <input type="text" id="p2" name="p2" autocomplete="off" placeholder="🟡 권장" maxlength="10" />
+          <div class="color-picker">
+            <input name="p2-bg-color" type="color" value="#f59e0b" />
+          </div>
+          <div class="color-picker">
+            <input name="p2-text-color" type="color" value="#ffffff" />
+          </div>
+        </fieldset>
 
-    <button type="submit" form="form">저장</button>
+        <fieldset class="rule-item">
+          <label for="p3" class="rule-badge rule-badge--p3">P3</label>
+          <input type="text" id="p3" name="p3" autocomplete="off" placeholder="🟢 선택" maxlength="10" />
+          <div class="color-picker">
+            <input name="p3-bg-color" type="color" value="#10b981" />
+          </div>
+          <div class="color-picker">
+            <input name="p3-text-color" type="color" value="#ffffff" />
+          </div>
+        </fieldset>
+      </form>
+
+      <button type="submit" form="form" class="submit-btn">
+        <span class="btn-icon">✓</span>
+        저장하기
+      </button>
+    </div>
   </body>
 </html>
