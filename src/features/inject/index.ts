@@ -5,6 +5,7 @@
 
 import { initPnRule, cleanupPnRule } from "@features/pn-rule";
 import { initRmMrFilter, cleanupRmMrFilter } from "@features/rm-mr-filter";
+import { initClickUpContent, cleanupClickUpContent } from "@features/clickup-content";
 
 /**
  * Initialize all features
@@ -12,6 +13,7 @@ import { initRmMrFilter, cleanupRmMrFilter } from "@features/rm-mr-filter";
 async function init(): Promise<void> {
   await initPnRule();
   initRmMrFilter();
+  initClickUpContent();
 }
 
 /**
@@ -20,6 +22,7 @@ async function init(): Promise<void> {
 function cleanup(): void {
   cleanupPnRule();
   cleanupRmMrFilter();
+  cleanupClickUpContent();
 }
 
 // Initialize on load

@@ -14,8 +14,20 @@
     "default_icon": "img/favicon.png",
     "default_popup": "src/features/popup/index.html"
   },
-  "permissions": ["storage"],
-  "host_permissions": ["*://*/*/*/-/merge_requests*"],
+  "permissions": ["storage", "declarativeNetRequest"],
+  "host_permissions": [
+    "*://*/*/*/-/merge_requests*",
+    "https://app.clickup.com/*"
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "clickup_headers",
+        "enabled": true,
+        "path": "rules/clickup-headers.json"
+      }
+    ]
+  },
   "content_scripts": [
     {
       "matches": ["*://*/*/*/-/merge_requests*"],
