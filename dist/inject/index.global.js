@@ -1,6 +1,17 @@
 "use strict";
 (() => {
   // src/domain/pn/index.ts
+  var DEFAULT_PN_RULE_MAP = {
+    p1: "P1",
+    p2: "P2",
+    p3: "P3",
+    "p1-bg-color": "#dc2626",
+    "p1-text-color": "#ffffff",
+    "p2-bg-color": "#f59e0b",
+    "p2-text-color": "#ffffff",
+    "p3-bg-color": "#10b981",
+    "p3-text-color": "#ffffff"
+  };
   function getBgColorKey(pn) {
     return `${pn}-bg-color`.toLocaleLowerCase();
   }
@@ -203,11 +214,13 @@
   var isActive = false;
   async function startPnRule() {
     if (isActive) return;
-    const pnMap = await getAllFromChromeLocalStorage();
-    if (isPnRuleMap(pnMap)) {
-      createPnRuleObserver(pnMap);
-      isActive = true;
-    }
+    const data = await getAllFromChromeLocalStorage();
+    const pnMap = {
+      ...DEFAULT_PN_RULE_MAP,
+      ...data
+    };
+    createPnRuleObserver(pnMap);
+    isActive = true;
   }
   function stopPnRule() {
     if (!isActive) return;
@@ -216,7 +229,10 @@
   }
   async function initPnRule() {
     const data = await getAllFromChromeLocalStorage();
-    const pnMap = data;
+    const pnMap = {
+      ...DEFAULT_PN_RULE_MAP,
+      ...data
+    };
     const isEnabled = data[STORAGE_KEY_ENABLED] !== false;
     unsubscribeStorage = subscribeToChromeStorage((changes) => {
       if (STORAGE_KEY_ENABLED in changes) {
@@ -235,9 +251,11 @@
           tmpMap[key] = change.newValue;
         });
         replaceText(tmpMap);
+      } else if (isEnabled) {
+        startPnRule();
       }
     });
-    if (isEnabled && isPnRuleMap(pnMap)) {
+    if (isEnabled) {
       createPnRuleObserver(pnMap);
       isActive = true;
     }
