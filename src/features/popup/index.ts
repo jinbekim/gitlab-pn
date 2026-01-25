@@ -64,7 +64,7 @@ function init(): void {
     });
   });
 
-  form?.addEventListener("submit", (e) => {
+  form?.addEventListener("submit", async (e) => {
     e.preventDefault();
     const formData = new FormData(form);
     const map: Record<string, FormDataEntryValue> = {};
@@ -73,7 +73,7 @@ function init(): void {
       map[key] = value;
     });
 
-    saveToChromeLocalStorage(map);
+    await saveToChromeLocalStorage(map);
 
     window.close();
   });
