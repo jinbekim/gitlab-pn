@@ -104,14 +104,14 @@ function init() {
       textInput.style.color = target.value;
     });
   });
-  form?.addEventListener("submit", (e) => {
+  form?.addEventListener("submit", async (e) => {
     e.preventDefault();
     const formData = new FormData(form);
     const map = {};
     formData.forEach((value, key) => {
       map[key] = value;
     });
-    saveToChromeLocalStorage(map);
+    await saveToChromeLocalStorage(map);
     window.close();
   });
 }
