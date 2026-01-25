@@ -1,4 +1,4 @@
-import { isPnRuleMap, PnRuleMapWithColor } from "@domain/pn";
+import { DEFAULT_PN_RULE_MAP, PnRuleMapWithColor } from "@domain/pn";
 import { getAllFromChromeLocalStorage, subscribeToChromeStorage } from "@utils/chrome";
 import { createPnRuleObserver, disconnectPnRuleObserver } from "./observer";
 import { replaceText } from "./replacer";
@@ -14,12 +14,14 @@ let isActive = false;
 async function startPnRule(): Promise<void> {
   if (isActive) return;
 
-  const pnMap = await getAllFromChromeLocalStorage() as PnRuleMapWithColor;
+  const data = await getAllFromChromeLocalStorage();
+  const pnMap: PnRuleMapWithColor = {
+    ...DEFAULT_PN_RULE_MAP,
+    ...data,
+  };
 
-  if (isPnRuleMap(pnMap)) {
-    createPnRuleObserver(pnMap);
-    isActive = true;
-  }
+  createPnRuleObserver(pnMap);
+  isActive = true;
 }
 
 /**
@@ -37,7 +39,10 @@ function stopPnRule(): void {
  */
 export async function initPnRule(): Promise<void> {
   const data = await getAllFromChromeLocalStorage();
-  const pnMap = data as PnRuleMapWithColor;
+  const pnMap: PnRuleMapWithColor = {
+    ...DEFAULT_PN_RULE_MAP,
+    ...data,
+  };
   const isEnabled = data[STORAGE_KEY_ENABLED] !== false;
 
   unsubscribeStorage = subscribeToChromeStorage((changes) => {
@@ -52,7 +57,7 @@ export async function initPnRule(): Promise<void> {
       return;
     }
 
-    // Handle pn rule map changes (only if active)
+    // Handle pn rule map changes
     if (isActive) {
       const tmpMap: Record<string, string> = {};
       Object.entries(changes).forEach(([key, change]) => {
@@ -60,10 +65,13 @@ export async function initPnRule(): Promise<void> {
         tmpMap[key] = change.newValue;
       });
       replaceText(tmpMap);
+    } else if (isEnabled) {
+      // If not active but enabled, start the feature with new settings
+      startPnRule();
     }
   });
 
-  if (isEnabled && isPnRuleMap(pnMap)) {
+  if (isEnabled) {
     createPnRuleObserver(pnMap);
     isActive = true;
   }

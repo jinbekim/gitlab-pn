@@ -11,6 +11,18 @@ export type PnRuleColorMap = {
 };
 export type PnRuleMapWithColor = PnRuleMap & PnRuleColorMap;
 
+export const DEFAULT_PN_RULE_MAP: PnRuleMapWithColor = {
+  p1: "P1",
+  p2: "P2",
+  p3: "P3",
+  "p1-bg-color": "#dc2626",
+  "p1-text-color": "#ffffff",
+  "p2-bg-color": "#f59e0b",
+  "p2-text-color": "#ffffff",
+  "p3-bg-color": "#10b981",
+  "p3-text-color": "#ffffff",
+};
+
 export function getBgColorKey(pn: PnRule | PnRuleSub): PnBgColorKey {
   return `${pn}-bg-color`.toLocaleLowerCase() as PnBgColorKey;
 }
