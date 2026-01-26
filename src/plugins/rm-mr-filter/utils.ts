@@ -1,20 +1,9 @@
-// interface Filter {
-//   type: string;
-//   value: {
-//     data: string;
-//     operator: string;
-//   };
-//   id: string;
-// }
-
-// type FilterList = Filter[][];
-
 type FilterList = string[];
 
 export function getKey() {
   const url = new URL(window.location.href);
   const pathname = url.pathname;
-  const [project] = pathname.split("/-/");
+  const [project] = pathname.split('/-/');
   return `${project.slice(1)}-merge-request-recent-searches`;
 }
 
