@@ -12,7 +12,8 @@
       "@utils/*": ["./utils/*"],
       "@domain/*": ["./domain/*"],
       "@services/*": ["./services/*"],
-      "@features/*": ["./features/*"]
+      "@core/*": ["./core/*"],
+      "@plugins/*": ["./plugins/*"]
     },
     "types": ["chrome"],
 

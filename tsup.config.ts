@@ -3,7 +3,7 @@ import { defineConfig } from 'tsup';
 export default defineConfig([
   // Popup - ES 모듈 유지 (HTML에서 type="module"로 로드)
   {
-    entry: ['src/features/popup/index.ts'],
+    entry: ['src/plugins/popup/index.ts'],
     outDir: 'dist/popup',
     format: ['esm'],
     splitting: false,
@@ -14,7 +14,7 @@ export default defineConfig([
   },
   // Content Script - IIFE 포맷 (모듈 지원 안됨)
   {
-    entry: ['src/features/inject/index.ts'],
+    entry: ['src/plugins/inject/index.ts'],
     outDir: 'dist/inject',
     format: ['iife'],
     splitting: false,
