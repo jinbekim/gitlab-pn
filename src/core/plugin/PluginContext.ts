@@ -2,7 +2,6 @@
  * Plugin context providing shared services to plugins
  */
 
-import { EventBus, eventBus } from '@core/events';
 import { StorageService, storageService } from '@core/storage';
 import * as gitlab from '@services/gitlab';
 
@@ -12,8 +11,6 @@ import * as gitlab from '@services/gitlab';
 export interface PluginContext {
   /** Storage service for Chrome storage operations */
   storage: StorageService;
-  /** Event bus for plugin communication */
-  eventBus: EventBus;
   /** GitLab DOM accessor functions */
   gitlab: typeof gitlab;
 }
@@ -24,7 +21,6 @@ export interface PluginContext {
 export function createPluginContext(): PluginContext {
   return {
     storage: storageService,
-    eventBus: eventBus,
     gitlab,
   };
 }

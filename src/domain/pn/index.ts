@@ -1,15 +1,14 @@
 export type PnRule = "p1" | "p2" | "p3";
 export type PnRuleSub = "P1" | "P2" | "P3";
-export type PnBgColorKey = `${PnRule}-bg-color`;
-export type PnTextColorKey = `${PnRule}-text-color`;
 
-export type PnRuleMap = {
+type PnBgColorKey = `${PnRule}-bg-color`;
+type PnTextColorKey = `${PnRule}-text-color`;
+
+export type PnRuleMapWithColor = {
   [key in PnRule]: string;
-};
-export type PnRuleColorMap = {
+} & {
   [key in PnBgColorKey | PnTextColorKey]?: string;
 };
-export type PnRuleMapWithColor = PnRuleMap & PnRuleColorMap;
 
 export const DEFAULT_PN_RULE_MAP: PnRuleMapWithColor = {
   p1: "P1",

@@ -85,61 +85,6 @@ export class PluginManager {
   }
 
   /**
-   * Enable a specific plugin
-   * @param id Plugin ID
-   */
-  async enable(id: string): Promise<void> {
-    const plugin = this.plugins.get(id);
-    if (!plugin) {
-      console.warn(`Plugin ${id} not found`);
-      return;
-    }
-
-    if (plugin.state === 'active') return;
-
-    try {
-      await plugin.start();
-    } catch (error) {
-      console.error(`Failed to enable plugin ${id}:`, error);
-    }
-  }
-
-  /**
-   * Disable a specific plugin
-   * @param id Plugin ID
-   */
-  disable(id: string): void {
-    const plugin = this.plugins.get(id);
-    if (!plugin) {
-      console.warn(`Plugin ${id} not found`);
-      return;
-    }
-
-    if (plugin.state !== 'active') return;
-
-    try {
-      plugin.stop();
-    } catch (error) {
-      console.error(`Failed to disable plugin ${id}:`, error);
-    }
-  }
-
-  /**
-   * Get a plugin by ID
-   * @param id Plugin ID
-   */
-  getPlugin(id: string): Plugin | undefined {
-    return this.plugins.get(id);
-  }
-
-  /**
-   * Get all registered plugins
-   */
-  getAllPlugins(): Plugin[] {
-    return Array.from(this.plugins.values());
-  }
-
-  /**
    * Handle storage changes and route to appropriate plugins
    */
   private handleStorageChanges(changes: StorageChanges): void {
@@ -147,10 +92,10 @@ export class PluginManager {
       // Check for enabled state changes
       if (plugin.meta.enabledKey in changes) {
         const enabled = changes[plugin.meta.enabledKey].newValue !== false;
-        if (enabled) {
-          this.enable(plugin.meta.id);
-        } else {
-          this.disable(plugin.meta.id);
+        if (enabled && plugin.state !== 'active') {
+          plugin.start();
+        } else if (!enabled && plugin.state === 'active') {
+          plugin.stop();
         }
       }
 

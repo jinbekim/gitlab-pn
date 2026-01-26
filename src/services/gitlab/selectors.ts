@@ -15,5 +15,3 @@ export const SELECTORS = {
   // Custom remove button class
   customRemoveButton: '.custom-rm-btn',
 } as const;
-
-export type SelectorKey = keyof typeof SELECTORS;

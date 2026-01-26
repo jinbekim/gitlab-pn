@@ -53,19 +53,3 @@ export function disconnectObserver(id: string): boolean {
   return false;
 }
 
-/**
- * Disconnects all registered observers
- */
-export function disconnectAllObservers(): void {
-  observers.forEach((entry) => {
-    entry.observer.disconnect();
-  });
-  observers.clear();
-}
-
-/**
- * Gets the count of active observers
- */
-export function getObserverCount(): number {
-  return observers.size;
-}
