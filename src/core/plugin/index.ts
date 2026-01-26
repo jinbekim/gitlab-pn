@@ -11,3 +11,4 @@ export {
   type PluginState,
   type StorageChanges,
 } from './types';
+export { PLUGIN_REGISTRY, type PluginInfo } from './registry';

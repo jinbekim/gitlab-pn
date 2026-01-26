@@ -16,54 +16,74 @@
         </div>
       </header>
 
-      <form id="form">
-        <fieldset class="priority-row">
-          <div class="badge-preview" id="p1-badge">P1</div>
-          <div class="color-group">
-            <span class="color-label">배경</span>
-            <div class="color-palette" data-target="p1-bg-color"></div>
-            <input type="hidden" name="p1-bg-color" value="#dc143c" />
-          </div>
-          <div class="color-group">
-            <span class="color-label">글자</span>
-            <div class="color-palette" data-target="p1-text-color"></div>
-            <input type="hidden" name="p1-text-color" value="#ffffff" />
-          </div>
-        </fieldset>
+      <!-- Tab Navigation -->
+      <div class="tabs">
+        <button class="tab active" data-tab="plugins">플러그인</button>
+        <button class="tab" data-tab="settings">설정</button>
+      </div>
 
-        <fieldset class="priority-row">
-          <div class="badge-preview" id="p2-badge">P2</div>
-          <div class="color-group">
-            <span class="color-label">배경</span>
-            <div class="color-palette" data-target="p2-bg-color"></div>
-            <input type="hidden" name="p2-bg-color" value="#ed9121" />
-          </div>
-          <div class="color-group">
-            <span class="color-label">글자</span>
-            <div class="color-palette" data-target="p2-text-color"></div>
-            <input type="hidden" name="p2-text-color" value="#ffffff" />
-          </div>
-        </fieldset>
+      <!-- Plugins Tab -->
+      <div class="tab-content" id="plugins-tab">
+        <div class="plugin-list" id="plugin-list">
+          <!-- Plugin toggles will be rendered here -->
+        </div>
+      </div>
 
-        <fieldset class="priority-row">
-          <div class="badge-preview" id="p3-badge">P3</div>
-          <div class="color-group">
-            <span class="color-label">배경</span>
-            <div class="color-palette" data-target="p3-bg-color"></div>
-            <input type="hidden" name="p3-bg-color" value="#009966" />
-          </div>
-          <div class="color-group">
-            <span class="color-label">글자</span>
-            <div class="color-palette" data-target="p3-text-color"></div>
-            <input type="hidden" name="p3-text-color" value="#ffffff" />
-          </div>
-        </fieldset>
-      </form>
+      <!-- Settings Tab -->
+      <div class="tab-content hidden" id="settings-tab">
+        <div class="settings-disabled" id="settings-disabled">
+          <p>Priority Label Replacer 플러그인을 활성화하면 색상 설정을 사용할 수 있습니다.</p>
+        </div>
 
-      <button type="submit" form="form" class="submit-btn">
-        <span class="btn-icon">✓</span>
-        저장하기
-      </button>
+        <form id="form" class="hidden">
+          <fieldset class="priority-row">
+            <div class="badge-preview" id="p1-badge">P1</div>
+            <div class="color-group">
+              <span class="color-label">배경</span>
+              <div class="color-palette" data-target="p1-bg-color"></div>
+              <input type="hidden" name="p1-bg-color" value="#dc143c" />
+            </div>
+            <div class="color-group">
+              <span class="color-label">글자</span>
+              <div class="color-palette" data-target="p1-text-color"></div>
+              <input type="hidden" name="p1-text-color" value="#ffffff" />
+            </div>
+          </fieldset>
+
+          <fieldset class="priority-row">
+            <div class="badge-preview" id="p2-badge">P2</div>
+            <div class="color-group">
+              <span class="color-label">배경</span>
+              <div class="color-palette" data-target="p2-bg-color"></div>
+              <input type="hidden" name="p2-bg-color" value="#ed9121" />
+            </div>
+            <div class="color-group">
+              <span class="color-label">글자</span>
+              <div class="color-palette" data-target="p2-text-color"></div>
+              <input type="hidden" name="p2-text-color" value="#ffffff" />
+            </div>
+          </fieldset>
+
+          <fieldset class="priority-row">
+            <div class="badge-preview" id="p3-badge">P3</div>
+            <div class="color-group">
+              <span class="color-label">배경</span>
+              <div class="color-palette" data-target="p3-bg-color"></div>
+              <input type="hidden" name="p3-bg-color" value="#009966" />
+            </div>
+            <div class="color-group">
+              <span class="color-label">글자</span>
+              <div class="color-palette" data-target="p3-text-color"></div>
+              <input type="hidden" name="p3-text-color" value="#ffffff" />
+            </div>
+          </fieldset>
+
+          <button type="submit" class="submit-btn">
+            <span class="btn-icon">✓</span>
+            저장하기
+          </button>
+        </form>
+      </div>
     </div>
   </body>
 </html>
