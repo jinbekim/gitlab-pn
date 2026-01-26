@@ -12,7 +12,7 @@
   "action": {
     "default_title": "gitlab-pn",
     "default_icon": "img/favicon.png",
-    "default_popup": "src/features/popup/index.html"
+    "default_popup": "dist/popup/index.html"
   },
   "permissions": ["storage"],
   "host_permissions": ["*://*/*/*/-/merge_requests*"],
@@ -21,7 +21,7 @@
       "matches": ["*://*/*/*/-/merge_requests*"],
       "js": ["dist/inject/index.global.js"],
       "run_at": "document_idle",
-      "css": ["src/styles/inject.css"]
+      "css": ["dist/inject/style.css"]
     }
   ]
 }

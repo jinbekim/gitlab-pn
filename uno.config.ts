@@ -1,10 +1,8 @@
 import { defineConfig, presetWind } from 'unocss';
 
 export default defineConfig({
-  presets: [
-    presetWind(),
-  ],
+  presets: [presetWind()],
   content: {
-    filesystem: ['src/**/*.ts'],
+    filesystem: ['src/**/*.ts', 'src/**/*.html'],
   },
 });

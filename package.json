@@ -2,9 +2,13 @@
   "name": "gitlab-pn",
   "version": "1.1.0",
   "scripts": {
-    "dev": "tsup --watch",
+    "dev": "npm run dev:popup & npm run dev:inject",
+    "dev:popup": "BUILD_TARGET=popup vite build --watch",
+    "dev:inject": "BUILD_TARGET=inject vite build --watch",
+    "build": "npm run build:popup && npm run build:inject",
+    "build:popup": "BUILD_TARGET=popup vite build",
+    "build:inject": "BUILD_TARGET=inject vite build",
     "type-check": "tsc --noEmit",
-    "build": "tsup",
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
@@ -17,11 +21,12 @@
   "license": "ISC",
   "devDependencies": {
     "@types/chrome": "^0.0.279",
+    "@types/node": "^25.0.10",
     "jsdom": "^27.4.0",
     "standard-version": "^9.5.0",
-    "tsup": "^8.3.5",
     "typescript": "^5.6.3",
     "unocss": "^0.65.3",
+    "vite": "^6.0.0",
     "vitest": "^3.0.5"
   }
 }
