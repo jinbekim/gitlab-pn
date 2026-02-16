@@ -2,6 +2,47 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.2.0 (2026-02-16)
+
+
+### Features
+
+* **popup:** 탭 기반 플러그인 관리 UI 추가 ad082be
+
+
+### Bug Fixes
+
+* **popup:** 저장 버튼 동작 및 가시성 문제 수정 ca6ac28
+* **pn-rule:** Chrome storage 초기 상태에서 기능 미동작 문제 수정 0f2c374
+
+
+### Build
+
+* tsup에서 Vite로 빌드 시스템 마이그레이션 9b428db
+
+
+### Style
+
+* **popup:** UI 스타일 간소화 및 컬러 팔레트 방식으로 변경 ae6055f
+
+
+### Code Refactoring
+
+* plugin 기반 아키텍처로 리팩토링 11b2a62
+* **rm-mr-filter:** 불필요한 주석 및 타입 정의 제거 ec8b1e5
+* remove unused code and dead exports 0fd5ed4
+
+
+### Documentation
+
+* README.md 구조 개선 및 개발 가이드 추가 f761040
+
+
+### Chores
+
+* add dist to gitignore and remove from tracking ad0b205
+* add _metadata to gitignore b6365b0
+
 ## 1.1.0 (2026-01-25)
 
 

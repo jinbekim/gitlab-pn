@@ -42,9 +42,12 @@ npm run build
 
 ## 사용 방법
 
-### pn-rule
+### 팝업 UI
 
-확장 프로그램 팝업에서 P1, P2, P3 각각의 텍스트와 색상을 설정할 수 있습니다.
+확장 프로그램 팝업은 탭 기반 UI로 구성되어 있습니다:
+
+- **기능설정 탭**: 플러그인별 활성화/비활성화 토글
+- **설정 탭**: P1/P2/P3 텍스트 및 컬러 팔레트 설정
 
 ![익스텐션 UI](https://github.com/user-attachments/assets/fb211f48-4b82-448e-ae37-63e64bc5b307)
 
@@ -70,8 +73,12 @@ npm install
 
 | 명령어 | 설명 |
 |--------|------|
-| `npm run dev` | Watch 모드 (개발) |
-| `npm run build` | 프로덕션 빌드 |
+| `npm run dev` | Watch 모드 (popup + inject 동시) |
+| `npm run dev:popup` | Popup Watch 모드 |
+| `npm run dev:inject` | Content script Watch 모드 |
+| `npm run build` | 프로덕션 빌드 (전체) |
+| `npm run build:popup` | Popup 프로덕션 빌드 |
+| `npm run build:inject` | Content script 프로덕션 빌드 |
 | `npm run type-check` | TypeScript 타입 체크 |
 | `npm run test` | 테스트 실행 (watch) |
 | `npm run test:run` | 테스트 1회 실행 |
@@ -114,6 +121,3 @@ src/
 - Chrome (Manifest V3)
 - GitLab (버전별 셀렉터 조정 필요시 `src/services/gitlab/selectors.ts` 수정)
 
-## TODO
-
-- GitLab 버전별 하드코딩 부분 변수로 분리
