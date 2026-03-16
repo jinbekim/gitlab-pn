@@ -4,7 +4,7 @@
 
 export interface MrDescription {
   title: string;
-  description_html: string;
+  descriptionHtml: string;
 }
 
 const cache = new Map<string, MrDescription>();
@@ -17,6 +17,26 @@ export function clearCache(): void {
   cache.clear();
 }
 
+async function renderMarkdown(
+  projectPath: string,
+  text: string,
+): Promise<string> {
+  const url = `${location.origin}/api/v4/markdown`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'same-origin',
+    body: JSON.stringify({
+      text,
+      project: projectPath,
+      gfm: true,
+    }),
+  });
+  if (!res.ok) return text;
+  const data = await res.json();
+  return data.html ?? text;
+}
+
 export async function fetchMrDescription(
   projectPath: string,
   mrIid: string,
@@ -25,7 +45,8 @@ export async function fetchMrDescription(
   const cached = cache.get(key);
   if (cached) return cached;
 
-  const url = `${location.origin}/api/v4/projects/${encodeURIComponent(projectPath)}/merge_requests/${mrIid}`;
+  const encodedPath = encodeURIComponent(projectPath);
+  const url = `${location.origin}/api/v4/projects/${encodedPath}/merge_requests/${mrIid}?render_html=true`;
   const res = await fetch(url, { credentials: 'same-origin' });
 
   if (!res.ok) {
@@ -33,9 +54,18 @@ export async function fetchMrDescription(
   }
 
   const data = await res.json();
+
+  let descriptionHtml: string =
+    data.description_html ?? '';
+
+  // fallback: render markdown if description_html is absent
+  if (!descriptionHtml && data.description) {
+    descriptionHtml = await renderMarkdown(projectPath, data.description);
+  }
+
   const result: MrDescription = {
     title: data.title,
-    description_html: data.description_html,
+    descriptionHtml,
   };
 
   cache.set(key, result);

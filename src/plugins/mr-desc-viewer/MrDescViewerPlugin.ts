@@ -29,8 +29,10 @@ export class MrDescViewerPlugin extends BasePlugin {
 
   private toggleButton: HTMLButtonElement | null = null;
   private dialog: HTMLDialogElement | null = null;
+  private currentMrInfo: MrUrlInfo | null = null;
   private lastUrl = '';
   private popstateHandler: (() => void) | null = null;
+  private navEventHandler: (() => void) | null = null;
 
   override async start(): Promise<void> {
     if (this._state === 'active') return;
@@ -50,28 +52,38 @@ export class MrDescViewerPlugin extends BasePlugin {
       window.removeEventListener('popstate', this.popstateHandler);
       this.popstateHandler = null;
     }
-
+    if (this.navEventHandler) {
+      window.removeEventListener('__mr_desc_nav__', this.navEventHandler);
+      this.navEventHandler = null;
+    }
     this.removeUI();
     this.lastUrl = '';
+    this.currentMrInfo = null;
 
     super.stop();
   }
 
   private setupNavigationListeners(): void {
+    const onNav = () => this.handleUrlChange();
+
     // Watch <title> changes for SPA navigation
     const titleEl = document.querySelector('title');
     if (titleEl) {
       createObserver({
         id: OBSERVER_ID,
         target: titleEl,
-        callback: () => this.handleUrlChange(),
+        callback: onNav,
         config: { childList: true },
       });
     }
 
     // popstate for back/forward navigation
-    this.popstateHandler = () => this.handleUrlChange();
+    this.popstateHandler = onNav;
     window.addEventListener('popstate', this.popstateHandler);
+
+    // Listen for custom nav event from MAIN world nav-interceptor script
+    this.navEventHandler = onNav;
+    window.addEventListener('__mr_desc_nav__', this.navEventHandler);
   }
 
   private handleUrlChange(): void {
@@ -87,26 +99,36 @@ export class MrDescViewerPlugin extends BasePlugin {
     }
 
     // Different MR → close dialog, clear cache
-    if (this.dialog?.open) {
-      closeDialog(this.dialog);
-      this.toggleButton?.classList.remove('active');
+    const prevMr = this.currentMrInfo;
+    if (prevMr && (prevMr.projectPath !== mrInfo.projectPath || prevMr.mrIid !== mrInfo.mrIid)) {
+      if (this.dialog?.open) {
+        closeDialog(this.dialog);
+        this.toggleButton?.classList.remove('active');
+      }
       clearCache();
     }
 
-    this.ensureUI(mrInfo);
+    this.currentMrInfo = mrInfo;
+    this.ensureUI();
   }
 
-  private ensureUI(mrInfo: MrUrlInfo): void {
+  private ensureUI(): void {
     if (!this.dialog) {
       this.dialog = createDescDialog();
       this.dialog.addEventListener('close', () => {
         this.toggleButton?.classList.remove('active');
       });
+      // Click on backdrop (the dialog element itself, outside inner content) closes
+      this.dialog.addEventListener('click', (e) => {
+        if (e.target === this.dialog) {
+          closeDialog(this.dialog!);
+        }
+      });
       document.body.appendChild(this.dialog);
     }
 
     if (!this.toggleButton) {
-      this.toggleButton = createToggleButton(() => this.toggleDialog(mrInfo));
+      this.toggleButton = createToggleButton(() => this.toggleDialog());
       document.body.appendChild(this.toggleButton);
     }
   }
@@ -123,8 +145,8 @@ export class MrDescViewerPlugin extends BasePlugin {
     }
   }
 
-  private async toggleDialog(mrInfo: MrUrlInfo): Promise<void> {
-    if (!this.dialog || !this.toggleButton) return;
+  private async toggleDialog(): Promise<void> {
+    if (!this.dialog || !this.toggleButton || !this.currentMrInfo) return;
 
     if (this.dialog.open) {
       closeDialog(this.dialog);
@@ -136,11 +158,12 @@ export class MrDescViewerPlugin extends BasePlugin {
     this.toggleButton.classList.add('active');
     setDialogLoading(this.dialog);
 
+    const { projectPath, mrIid } = this.currentMrInfo;
+
     try {
-      const data = await fetchMrDescription(mrInfo.projectPath, mrInfo.mrIid);
-      // Dialog may have been closed while fetching
+      const data = await fetchMrDescription(projectPath, mrIid);
       if (this.dialog?.open) {
-        setDialogContent(this.dialog, data.title, data.description_html);
+        setDialogContent(this.dialog, data.descriptionHtml);
       }
     } catch (err) {
       if (this.dialog?.open) {

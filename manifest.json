@@ -15,13 +15,19 @@
     "default_popup": "dist/popup/index.html"
   },
   "permissions": ["storage"],
-  "host_permissions": ["*://*/*/*/-/merge_requests*"],
+  "host_permissions": ["*://*/*"],
   "content_scripts": [
     {
       "matches": ["*://*/*/*/-/merge_requests*"],
       "js": ["dist/inject/index.global.js"],
       "run_at": "document_idle",
       "css": ["dist/inject/style.css"]
+    },
+    {
+      "matches": ["*://*/*/*/-/merge_requests*"],
+      "js": ["dist/nav-interceptor/index.global.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
     }
   ]
 }

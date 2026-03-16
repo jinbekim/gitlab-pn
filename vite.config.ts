@@ -13,6 +13,24 @@ const alias = {
 export default defineConfig(({ mode }) => {
   const target = process.env.BUILD_TARGET || 'popup';
 
+  if (target === 'nav-interceptor') {
+    return {
+      resolve: { alias },
+      build: {
+        lib: {
+          entry: resolve(__dirname, 'src/plugins/mr-desc-viewer/nav-interceptor.ts'),
+          name: 'NavInterceptor',
+          formats: ['iife'],
+          fileName: () => 'index.global.js',
+        },
+        outDir: 'dist/nav-interceptor',
+        emptyOutDir: true,
+        sourcemap: false,
+        minify: mode === 'production',
+      },
+    };
+  }
+
   if (target === 'inject') {
     return {
       resolve: { alias },
