@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.3.0 (2026-03-16)
+
+
+### Features
+
+* **mr-desc-viewer:** Changes 탭에서 MR description 사이드 패널 보기 플러그인 추가 71c03e4
+
+
+### Bug Fixes
+
+* **mr-desc-viewer:** SPA 네비게이션 감지, 다크 테마, API 호환성 개선 b5f4436
+* **mr-desc-viewer:** MAIN world nav-interceptor로 CSP 호환 pushState 인터셉트
+* **mr-desc-viewer:** GitLab lazy load 이미지(data-src) 처리
+* **mr-desc-viewer:** showModal backdrop 지원 및 외부 클릭 닫기
+
+
+### Build
+
+* nav-interceptor MAIN world content script 빌드 타겟 추가
+
 ## 1.2.0 (2026-02-16)
 
 
