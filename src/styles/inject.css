@@ -19,3 +19,111 @@ li[data-testid="dropdown-item"] {
   display: flex;
   padding: .25rem;
 }
+
+/* ── MR Description Viewer ── */
+
+.mr-desc-viewer-toggle {
+  position: fixed;
+  right: 16px;
+  top: 64px;
+  z-index: 999;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--gl-border-color-default, #dcdcde);
+  background: var(--gl-background-color-default, #fff);
+  color: var(--gl-text-color-default, #303030);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  transition: background 0.15s, right 0.25s ease;
+}
+
+.mr-desc-viewer-toggle:hover {
+  background: var(--gl-background-color-subtle, #f0f0f0);
+}
+
+.mr-desc-viewer-toggle.active {
+  background: var(--gl-background-color-strong, #e1e1e1);
+  right: 416px;
+}
+
+.mr-desc-viewer-dialog {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 400px;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-left: 1px solid var(--gl-border-color-default, #dcdcde);
+  background: var(--gl-background-color-default, #fff);
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.08);
+  z-index: 998;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.25s ease;
+}
+
+.mr-desc-viewer-dialog[open] {
+  transform: translateX(0);
+}
+
+.mr-desc-viewer-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 16px;
+  border-bottom: 1px solid var(--gl-border-color-default, #dcdcde);
+  flex-shrink: 0;
+}
+
+.mr-desc-viewer-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--gl-text-color-default, #303030);
+  word-break: break-word;
+}
+
+.mr-desc-viewer-close {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: none;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--gl-text-color-subtle, #737278);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mr-desc-viewer-close:hover {
+  background: var(--gl-background-color-subtle, #f0f0f0);
+}
+
+.mr-desc-viewer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.mr-desc-viewer-loading,
+.mr-desc-viewer-error {
+  color: var(--gl-text-color-subtle, #737278);
+  font-style: italic;
+}
+
+.mr-desc-viewer-error {
+  color: var(--gl-text-color-danger, #dd2b0e);
+}

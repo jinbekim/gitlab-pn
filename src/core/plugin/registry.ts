@@ -22,4 +22,10 @@ export const PLUGIN_REGISTRY: PluginInfo[] = [
     description: 'MR 필터 히스토리 항목 삭제 버튼 추가',
     enabledKey: 'rm-mr-filter-enabled',
   },
+  {
+    id: 'mr-desc-viewer',
+    name: 'MR Description Viewer',
+    description: 'Changes 탭에서 MR 설명 사이드 패널 보기',
+    enabledKey: 'mr-desc-viewer-enabled',
+  },
 ];
