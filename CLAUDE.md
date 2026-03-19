@@ -8,16 +8,19 @@ gitlab-pn is a Chrome extension (Manifest V3) that customizes GitLab merge reque
 
 1. **pn-rule**: Replaces priority labels (P1, P2, P3) in MR notes with customizable styled markers (text + colors)
 2. **rm-mr-filter**: Adds delete buttons to MR filter history items, removing them from both DOM and localStorage
+3. **mr-desc-viewer**: Shows MR description in a side panel on Changes/Commits tabs, with SPA navigation detection
 
 ## Commands
 
 ```bash
-npm run dev          # Watch mode with tsup
-npm run build        # Production build
+npm run dev          # Watch mode (popup + inject)
+npm run build        # Production build (popup + inject + nav-interceptor)
+npm run build:nav-interceptor  # SPA navigation interceptor build
 npm run type-check   # TypeScript type checking (tsc --noEmit)
 npm run test         # Run tests in watch mode
 npm run test:run     # Run tests once
 npm run test:coverage # Run tests with coverage
+npm run release      # standard-version release
 ```
 
 ## Architecture
@@ -50,6 +53,15 @@ gitlab-pn/
 │   │   │   ├── RmMrFilterPlugin.ts   # Plugin class extending BasePlugin
 │   │   │   ├── utils.ts              # localStorage operations
 │   │   │   └── ui/RemoveButton.ts
+│   │   ├── mr-desc-viewer/
+│   │   │   ├── index.ts              # Plugin exports
+│   │   │   ├── MrDescViewerPlugin.ts # Plugin class extending BasePlugin
+│   │   │   ├── api.ts                # GitLab API for MR description
+│   │   │   ├── url.ts                # URL parsing utilities
+│   │   │   ├── nav-interceptor.ts    # SPA navigation detection (MAIN world)
+│   │   │   └── ui/
+│   │   │       ├── ToggleButton.ts   # Toggle button UI
+│   │   │       └── DescDialog.ts     # Description side panel dialog
 │   │   ├── inject/                   # Content script entry point
 │   │   │   └── index.ts              # Uses PluginManager
 │   │   └── popup/                    # Extension popup UI
@@ -81,8 +93,7 @@ gitlab-pn/
 ├── dist/                             # Build output
 ├── img/
 ├── manifest.json
-├── tsup.config.ts
-├── uno.config.ts
+├── vite.config.ts
 ├── vitest.config.ts
 ├── tsconfig.json
 └── package.json
@@ -91,6 +102,7 @@ gitlab-pn/
 ### Entry Points
 - `src/plugins/popup/index.ts` - Extension popup UI for configuring P1/P2/P3 replacement text and colors
 - `src/plugins/inject/index.ts` - Content script using PluginManager to orchestrate plugins
+- `src/plugins/mr-desc-viewer/nav-interceptor.ts` - SPA navigation interceptor (MAIN world)
 
 ### Plugin System
 
@@ -163,6 +175,12 @@ export class MyPlugin extends BasePlugin {
 - Uses MutationObserver on filter dropdown button
 - Adds remove buttons to filter list items
 
+**src/plugins/mr-desc-viewer/** - MR description side panel plugin
+- `MrDescViewerPlugin` - Plugin class with SPA navigation awareness
+- Fetches MR description via GitLab API and renders in a side dialog
+- `nav-interceptor.ts` runs in MAIN world to detect pushState/popstate navigation
+- Auto-hides on Overview tab, shows toggle button on other MR tabs
+
 **src/services/gitlab/** - GitLab-specific DOM utilities
 - Centralized selectors in `selectors.ts` for easy version updates
 - DOM accessor functions for notes and filter elements
@@ -183,13 +201,14 @@ export class MyPlugin extends BasePlugin {
 - `@plugins/*` → `./src/plugins/*`
 
 ### Build Output
-tsup bundles to `dist/` with entry points at `src/plugins/popup/index.ts` and `src/plugins/inject/index.ts`.
+Vite bundles to `dist/` with entry points at `src/plugins/popup/index.ts`, `src/plugins/inject/index.ts`, and `src/plugins/mr-desc-viewer/nav-interceptor.ts`.
 
 ## Storage Key Compatibility
 
 Existing storage keys maintained for backwards compatibility:
 - `pn-rule-enabled` - Enable/disable pn-rule plugin
 - `rm-mr-filter-enabled` - Enable/disable rm-mr-filter plugin
+- `mr-desc-viewer-enabled` - Enable/disable mr-desc-viewer plugin
 - `p1`, `p2`, `p3` - Priority label replacement text
 - `p1-bg-color`, `p1-text-color`, etc. - Priority label colors
 

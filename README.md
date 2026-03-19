@@ -85,10 +85,15 @@ npm install
 | `npm run build` | 프로덕션 빌드 (전체) |
 | `npm run build:popup` | Popup 프로덕션 빌드 |
 | `npm run build:inject` | Content script 프로덕션 빌드 |
+| `npm run build:nav-interceptor` | SPA 네비게이션 감지 스크립트 빌드 |
 | `npm run type-check` | TypeScript 타입 체크 |
 | `npm run test` | 테스트 실행 (watch) |
 | `npm run test:run` | 테스트 1회 실행 |
 | `npm run test:coverage` | 커버리지 리포트 |
+| `npm run release` | standard-version 릴리즈 |
+| `npm run release:minor` | minor 릴리즈 |
+| `npm run release:major` | major 릴리즈 |
+| `npm run release:patch` | patch 릴리즈 |
 
 ### 빌드 결과
 
@@ -118,6 +123,11 @@ gitlab-pn은 플러그인 기반 아키텍처를 사용합니다:
 src/
 ├── core/           # 플러그인 시스템 코어
 ├── plugins/        # 플러그인 구현체
+│   ├── pn-rule/
+│   ├── rm-mr-filter/
+│   ├── mr-desc-viewer/
+│   ├── inject/
+│   └── popup/
 ├── domain/         # 도메인 모델
 ├── services/       # GitLab DOM 서비스
 └── utils/          # 유틸리티
