@@ -3,6 +3,7 @@ import '../styles/inject.css';
 import { pluginManager } from '@core/plugin';
 import { PnRulePlugin } from '@plugins/pn-rule';
 import { RmMrFilterPlugin } from '@plugins/rm-mr-filter';
+import { PinMrFilterPlugin } from '@plugins/pin-mr-filter';
 import { MrDescViewerPlugin } from '@plugins/mr-desc-viewer';
 import { UrgentMrPlugin } from '@plugins/urgent-mr';
 
@@ -13,6 +14,7 @@ export default defineContentScript({
   main() {
     pluginManager.register(new PnRulePlugin());
     pluginManager.register(new RmMrFilterPlugin());
+    pluginManager.register(new PinMrFilterPlugin());
     pluginManager.register(new MrDescViewerPlugin());
     pluginManager.register(new UrgentMrPlugin());
 

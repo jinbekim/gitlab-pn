@@ -4,11 +4,12 @@
 
 import { BasePlugin, type PluginMeta, type PluginContext } from '@core/plugin';
 import { createObserver, disconnectObserver } from '@utils/observer';
-import { removeFilterByIndex } from './utils';
+import { removeFilterByText } from './utils';
 import { RemoveButton } from './ui/RemoveButton';
 
 const STORAGE_KEY_ENABLED = 'rm-mr-filter-enabled';
 const OBSERVER_ID = 'rm-mr-filter-observer';
+const FILTER_DONE_EVENT = '__rm_filter_done__';
 
 export class RmMrFilterPlugin extends BasePlugin {
   readonly meta: PluginMeta = {
@@ -50,15 +51,23 @@ export class RmMrFilterPlugin extends BasePlugin {
     });
 
     this.addRemoveButtonsToFilters();
+    window.addEventListener('message', this.handleFilterDone);
     await super.start();
   }
 
   override stop(): void {
     if (this._state !== 'active') return;
 
+    window.removeEventListener('message', this.handleFilterDone);
     disconnectObserver(OBSERVER_ID);
     super.stop();
   }
+
+  private handleFilterDone = (e: MessageEvent) => {
+    if (e.data?.type === FILTER_DONE_EVENT) {
+      this.addRemoveButtonsToFilters();
+    }
+  };
 
   private addRemoveButtonsToFilters(): void {
     const filterList = this.getFilterListItems();
@@ -74,8 +83,7 @@ export class RmMrFilterPlugin extends BasePlugin {
       removeButton.addEventListener('click', (e) => {
         e.stopPropagation();
         e.preventDefault();
-        removeFilterByIndex(e);
-        filter.remove();
+        removeFilterByText(e);
       });
     });
   }

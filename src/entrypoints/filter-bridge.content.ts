@@ -1,0 +1,68 @@
+export default defineContentScript({
+  matches: ['*://*/*/*/-/merge_requests*'],
+  runAt: 'document_idle',
+  world: 'MAIN',
+
+  main() {
+    const REMOVE_EVENT = '__rm_filter_remove__';
+
+    window.addEventListener('message', (e) => {
+      if (e.data?.type !== REMOVE_EVENT) return;
+      removeViaVue(e.data.searchText);
+    });
+
+    function findVueInstance() {
+      const dropdownContent = document.querySelector(
+        '.filtered-search-history-dropdown-content',
+      );
+      if (!dropdownContent) return null;
+
+      const children = dropdownContent.querySelectorAll('*');
+      for (let i = 0; i < children.length; i++) {
+        const vue = (children[i] as any).__vue__;
+        if (vue?.$options?.name === 'RecentSearchesDropdownContent') {
+          return vue;
+        }
+      }
+      return null;
+    }
+
+    /** "draft: = No" → "draft:=No", "author: != @jinbeom" → "author:!=@jinbeom" */
+    function normalize(text: string): string {
+      return text.replace(/\s*:\s*(!?=)\s*/g, ':$1');
+    }
+
+    function removeViaVue(searchText: string): boolean {
+      const vm = findVueInstance();
+      const recentSearches = vm?.$parent?.$data?.recentSearches;
+      if (!Array.isArray(recentSearches)) return false;
+
+      const normalized = normalize(searchText);
+      const idx = recentSearches.findIndex((item: unknown) => {
+        if (typeof item === 'string') return item === normalized;
+        if (Array.isArray(item)) return normalize(item.join(' ')) === normalized;
+        return false;
+      });
+      if (idx === -1) return false;
+
+      recentSearches.splice(idx, 1);
+      syncLocalStorage(recentSearches);
+
+      // Wait for Vue re-render, then notify ISOLATED world to re-inject custom elements
+      vm!.$nextTick(() => {
+        window.postMessage({ type: '__rm_filter_done__' }, '*');
+      });
+
+      return true;
+    }
+
+    function syncLocalStorage(searches: unknown[]) {
+      const pathMatch = window.location.pathname.match(
+        /\/([^/]+\/[^/]+)\/-\/merge_requests/,
+      );
+      if (!pathMatch) return;
+      const key = pathMatch[1] + '-merge-request-recent-searches';
+      localStorage.setItem(key, JSON.stringify(searches));
+    }
+  },
+});

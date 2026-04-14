@@ -12,8 +12,10 @@ export const SELECTORS = {
   filterDropdownButton: 'button.filtered-search-history-dropdown-toggle-button',
   filterListItem: 'li[data-testid="dropdown-item"]:not(.gl-text-subtle)',
 
-  // Custom remove button class
+  // Custom button classes
   customRemoveButton: '.custom-rm-btn',
+  customPinButton: '.custom-pin-btn',
+  customPinnedInjected: '.custom-pinned-injected',
 
   // MR form elements
   mrTitleInput: 'input#merge_request_title',

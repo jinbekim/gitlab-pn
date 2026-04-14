@@ -1,3 +1,5 @@
+import { getPinnedList, setPinnedList } from './pinStorage';
+
 type FilterList = string[];
 
 export function getKey() {
@@ -19,21 +21,33 @@ export function setFilterList(filterList: FilterList) {
   localStorage.setItem(key, JSON.stringify(filterList));
 }
 
-export function removeFilterByIndex(e: MouseEvent) {
-  const filterList = getFilterList();
-  const li = (e.target as HTMLButtonElement).parentElement?.parentElement;
-  const siblings = Array.from(li?.parentElement?.children ?? []);
+export function removeFilterByText(e: MouseEvent) {
+  const li = (e.target as HTMLElement).closest('li[data-testid="dropdown-item"]');
+  if (!li) return;
 
-  if (!li || siblings.length === 0) {
-    console.warn(`cannot find li or siblings`);
-    return;
+  const searchButton = li.querySelector('button.filtered-search-history-dropdown-item');
+  const searchText = searchButton?.textContent?.trim() ?? '';
+  if (!searchText) return;
+
+  // Dispatch to MAIN world for Vue reactive removal + localStorage sync
+  window.postMessage({ type: '__rm_filter_remove__', searchText }, '*');
+
+  // Fallback: also remove from localStorage directly
+  // (in case MAIN world script hasn't loaded)
+  // Normalize "draft: = No" → "draft:=No" to match stored format
+  const normalized = searchText.replace(/\s*:\s*(!?=)\s*/g, ':$1');
+  const filterList = getFilterList();
+  const idx = filterList.indexOf(normalized);
+  if (idx !== -1) {
+    filterList.splice(idx, 1);
+    setFilterList(filterList);
   }
-  const idx = siblings.indexOf(li as Element);
-  if (idx === -1) {
-    console.warn(`cannot find index of ${li} from ${siblings}`);
-    return;
+
+  // Remove from pinned list (extension-only storage)
+  const pinnedList = getPinnedList();
+  const pinnedIdx = pinnedList.indexOf(searchText);
+  if (pinnedIdx !== -1) {
+    pinnedList.splice(pinnedIdx, 1);
+    setPinnedList(pinnedList);
   }
-  console.log(`remove filter at index ${idx}`, filterList);
-  filterList.splice(idx, 1);
-  setFilterList(filterList);
 }

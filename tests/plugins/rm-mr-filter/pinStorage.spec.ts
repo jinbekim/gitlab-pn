@@ -4,6 +4,9 @@ import {
   isPinned,
   reorderWithPinnedFirst,
   restoreMissingPinned,
+  getPinnedList,
+  setPinnedList,
+  togglePin,
 } from '../../../src/plugins/rm-mr-filter/pinStorage';
 
 describe('pinStorage', () => {
@@ -78,6 +81,65 @@ describe('pinStorage', () => {
     it('should handle empty pinned list', () => {
       const filters = ['a', 'b'];
       expect(restoreMissingPinned(filters, [])).toEqual(['a', 'b']);
+    });
+  });
+
+  describe('getPinnedList / setPinnedList', () => {
+    let storage: Record<string, string>;
+
+    beforeEach(() => {
+      storage = {};
+      vi.stubGlobal('location', { href: 'https://gitlab.example.com/group/project/-/merge_requests' });
+      vi.stubGlobal('localStorage', {
+        getItem: (key: string) => storage[key] ?? null,
+        setItem: (key: string, value: string) => { storage[key] = value; },
+      });
+    });
+
+    it('should return empty array when nothing stored', () => {
+      expect(getPinnedList()).toEqual([]);
+    });
+
+    it('should save and retrieve pinned list', () => {
+      setPinnedList(['filter-a', 'filter-b']);
+      expect(getPinnedList()).toEqual(['filter-a', 'filter-b']);
+    });
+
+    it('should return empty array on invalid JSON', () => {
+      storage['pinned-filters:group/project'] = 'not-json';
+      expect(getPinnedList()).toEqual([]);
+    });
+  });
+
+  describe('togglePin', () => {
+    let storage: Record<string, string>;
+
+    beforeEach(() => {
+      storage = {};
+      vi.stubGlobal('location', { href: 'https://gitlab.example.com/group/project/-/merge_requests' });
+      vi.stubGlobal('localStorage', {
+        getItem: (key: string) => storage[key] ?? null,
+        setItem: (key: string, value: string) => { storage[key] = value; },
+      });
+    });
+
+    it('should pin a filter and return true', () => {
+      const result = togglePin('filter-a');
+      expect(result).toBe(true);
+      expect(getPinnedList()).toEqual(['filter-a']);
+    });
+
+    it('should unpin a filter and return false', () => {
+      setPinnedList(['filter-a', 'filter-b']);
+      const result = togglePin('filter-a');
+      expect(result).toBe(false);
+      expect(getPinnedList()).toEqual(['filter-b']);
+    });
+
+    it('should add to existing pinned list', () => {
+      setPinnedList(['filter-a']);
+      togglePin('filter-b');
+      expect(getPinnedList()).toEqual(['filter-a', 'filter-b']);
     });
   });
 });

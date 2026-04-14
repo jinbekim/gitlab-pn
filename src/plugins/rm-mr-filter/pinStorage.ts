@@ -38,3 +38,40 @@ export function restoreMissingPinned(filters: string[], pinned: string[]): strin
   const missing = pinned.filter((p) => !existing.has(p));
   return [...filters, ...missing];
 }
+
+/**
+ * Read pinned list from localStorage
+ */
+export function getPinnedList(): string[] {
+  const key = getPinStorageKey();
+  const value = localStorage.getItem(key);
+  if (!value) return [];
+  try {
+    return JSON.parse(value) as string[];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Save pinned list to localStorage
+ */
+export function setPinnedList(pinned: string[]): void {
+  localStorage.setItem(getPinStorageKey(), JSON.stringify(pinned));
+}
+
+/**
+ * Toggle pin state for a filter. Returns true if now pinned, false if unpinned.
+ */
+export function togglePin(filterText: string): boolean {
+  const pinned = getPinnedList();
+  const idx = pinned.indexOf(filterText);
+  if (idx === -1) {
+    pinned.push(filterText);
+    setPinnedList(pinned);
+    return true;
+  }
+  pinned.splice(idx, 1);
+  setPinnedList(pinned);
+  return false;
+}
