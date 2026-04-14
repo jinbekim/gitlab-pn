@@ -51,24 +51,6 @@ npm run build
 
 <img width="702" height="402" alt="image" src="https://github.com/user-attachments/assets/107f7a7b-e86d-423c-9cbf-b0e61de41dcb" />
 
-
-## 사용 방법
-
-### 팝업 UI
-
-확장 프로그램 팝업은 탭 기반 UI로 구성되어 있습니다:
-
-- **기능설정 탭**: 플러그인별 활성화/비활성화 토글
-- **설정 탭**: P1/P2/P3 텍스트 및 컬러 팔레트 설정
-
-![익스텐션 UI](https://github.com/user-attachments/assets/fb211f48-4b82-448e-ae37-63e64bc5b307)
-
-### rm-mr-filter
-
-MR 필터 히스토리 드롭다운에서 삭제 버튼을 클릭하면, 해당 element와 localStorage에 저장된 필터 정보가 제거됩니다.
-
-![rm_mr_filter](/public/img/rm_mr_filter.png)
-
 ## 개발 가이드
 
 ### 요구사항
