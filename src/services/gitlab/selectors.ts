@@ -14,4 +14,8 @@ export const SELECTORS = {
 
   // Custom remove button class
   customRemoveButton: '.custom-rm-btn',
+
+  // MR form elements
+  mrTitleInput: 'input#merge_request_title',
+  mrDraftCheckbox: '[data-testid="issuable-draft-checkbox"]',
 } as const;

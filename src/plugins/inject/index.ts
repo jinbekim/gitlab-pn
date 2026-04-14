@@ -9,11 +9,13 @@ import { pluginManager } from '@core/plugin';
 import { PnRulePlugin } from '@plugins/pn-rule';
 import { RmMrFilterPlugin } from '@plugins/rm-mr-filter';
 import { MrDescViewerPlugin } from '@plugins/mr-desc-viewer';
+import { UrgentMrPlugin } from '@plugins/urgent-mr';
 
 // Register all plugins
 pluginManager.register(new PnRulePlugin());
 pluginManager.register(new RmMrFilterPlugin());
 pluginManager.register(new MrDescViewerPlugin());
+pluginManager.register(new UrgentMrPlugin());
 
 // Initialize all plugins
 pluginManager.initAll();

@@ -18,4 +18,8 @@ export function getFilterListItems() {
   return dropdown.querySelectorAll(SELECTORS.filterListItem);
 }
 
+export function getMrTitleInput() {
+  return document.querySelector<HTMLInputElement>(SELECTORS.mrTitleInput);
+}
+
 export { SELECTORS };

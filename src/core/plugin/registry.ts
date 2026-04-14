@@ -28,4 +28,10 @@ export const PLUGIN_REGISTRY: PluginInfo[] = [
     description: 'Changes 탭에서 MR 설명 사이드 패널 보기',
     enabledKey: 'mr-desc-viewer-enabled',
   },
+  {
+    id: 'urgent-mr',
+    name: 'Urgent MR Toggle',
+    description: 'MR 제목에 ❗️ 긴급 표시 체크박스 추가',
+    enabledKey: 'urgent-mr-enabled',
+  },
 ];
