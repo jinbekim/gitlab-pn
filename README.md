@@ -41,15 +41,16 @@ npm run build
 
 #### 3. 우측 상단의 `개발자 모드` 활성화
 
-![개발자 모드 토글](/img/dev-mode.png)
+![개발자 모드 토글](/public/img/dev-mode.png)
 
 #### 4. `압축해제된 확장 프로그램을 로드합니다.` 클릭
 
-![프로그램 로드 버튼](/img/load.png)
+![프로그램 로드 버튼](/public/img/load.png)
 
 #### 5. 클론한 위치에서 `dist/chrome-mv3` 폴더 선택
 
-![폴더 선택 창](/img/select.png)
+<img width="702" height="402" alt="image" src="https://github.com/user-attachments/assets/107f7a7b-e86d-423c-9cbf-b0e61de41dcb" />
+
 
 ## 사용 방법
 
@@ -66,7 +67,7 @@ npm run build
 
 MR 필터 히스토리 드롭다운에서 삭제 버튼을 클릭하면, 해당 element와 localStorage에 저장된 필터 정보가 제거됩니다.
 
-![rm_mr_filter](/img/rm_mr_filter.png)
+![rm_mr_filter](/public/img/rm_mr_filter.png)
 
 ## 개발 가이드
 
