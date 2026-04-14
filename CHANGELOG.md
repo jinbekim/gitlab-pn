@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/jinbekim/gitlab-pn/compare/v1.2.0...v1.4.0) (2026-04-14)
+
+
+### Features
+
+* **mr-desc-viewer:** MR description 사이드 패널 플러그인 추가 ([71c03e4](https://github.com/jinbekim/gitlab-pn/commit/71c03e46707f1fefc5dc98937d43b0167b142d53))
+* **urgent-mr:** MR 제목 긴급 표시 체크박스 플러그인 추가 ([92080de](https://github.com/jinbekim/gitlab-pn/commit/92080def944ee7f34d1b74f06f713a1980b7b85c))
+
+
+### Bug Fixes
+
+* **mr-desc-viewer:** SPA 네비게이션 감지, 다크 테마, API 호환성 개선 ([b5f4436](https://github.com/jinbekim/gitlab-pn/commit/b5f44368976e0fdf010f728838d8aaa450840f14))
+* **rm-mr-filter:** pinStorage 모듈 누락으로 인한 테스트 실패 수정 ([ae0f5b9](https://github.com/jinbekim/gitlab-pn/commit/ae0f5b9b50d9d2c19866215f7c882089d4fc4c88))
+* **urgent-mr:** GitLab 네이티브 체크박스 구조로 스타일 일치 ([87874a4](https://github.com/jinbekim/gitlab-pn/commit/87874a49353e2f232de6b3ca4b5013da21bc7f64))
+
+
+### Documentation
+
+* README.md, CLAUDE.md에 mr-desc-viewer 플러그인 및 Vite 빌드 반영 ([67f43d4](https://github.com/jinbekim/gitlab-pn/commit/67f43d436febd812a9b9077264838f0b77ac4c2e))
+
 ## 1.3.0 (2026-03-16)
 
 
