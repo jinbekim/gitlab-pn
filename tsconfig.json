@@ -1,4 +1,5 @@
 {
+  "extends": "./.wxt/tsconfig.json",
   "compilerOptions": {
     /* Language and Environment */
     "target": "ESNext",
@@ -15,7 +16,6 @@
       "@core/*": ["./core/*"],
       "@plugins/*": ["./plugins/*"]
     },
-    "types": ["chrome"],
 
     /* Interop Constraints */
     "esModuleInterop": true,
@@ -31,6 +31,6 @@
     /* Completeness */
     "skipLibCheck": true
   },
-  "include": ["src/**/*", "tests/**/*"],
+  "include": ["src/**/*", "tests/**/*", ".wxt/wxt.d.ts"],
   "exclude": ["node_modules", "dist"]
 }

@@ -18,7 +18,8 @@ export default defineConfig({
       '@utils': resolve(__dirname, 'src/utils'),
       '@domain': resolve(__dirname, 'src/domain'),
       '@services': resolve(__dirname, 'src/services'),
-      '@features': resolve(__dirname, 'src/features'),
+      '@core': resolve(__dirname, 'src/core'),
+      '@plugins': resolve(__dirname, 'src/plugins'),
     },
   },
 });

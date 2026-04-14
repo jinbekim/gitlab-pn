@@ -1,5 +1,5 @@
-import 'virtual:uno.css';
-import './index.css';
+import 'uno.css';
+import './style.css';
 import { getAllFromChromeLocalStorage, saveToChromeLocalStorage } from "@utils/chrome";
 import { getBgColorKey, getTextColorKey, PnRule } from "@domain/pn";
 import { PLUGIN_REGISTRY, type PluginInfo } from "@core/plugin";

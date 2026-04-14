@@ -13,9 +13,9 @@ gitlab-pn is a Chrome extension (Manifest V3) that customizes GitLab merge reque
 ## Commands
 
 ```bash
-npm run dev          # Watch mode (popup + inject)
-npm run build        # Production build (popup + inject + nav-interceptor)
-npm run build:nav-interceptor  # SPA navigation interceptor build
+npm run dev          # WXT dev mode with HMR and auto-reload
+npm run build        # Production build (wxt build)
+npm run zip          # Build and zip for distribution
 npm run type-check   # TypeScript type checking (tsc --noEmit)
 npm run test         # Run tests in watch mode
 npm run test:run     # Run tests once
@@ -30,6 +30,13 @@ npm run release      # standard-version release
 ```
 gitlab-pn/
 ├── src/
+│   ├── entrypoints/                  # WXT entry points (auto-discovered)
+│   │   ├── popup/                    # Extension popup UI
+│   │   │   ├── index.html
+│   │   │   ├── main.ts
+│   │   │   └── style.css
+│   │   ├── inject.content.ts         # Content script (ISOLATED world)
+│   │   └── nav-interceptor.content.ts # SPA nav detection (MAIN world)
 │   ├── core/                         # Plugin system core
 │   │   ├── plugin/
 │   │   │   ├── index.ts              # Re-exports
@@ -58,16 +65,14 @@ gitlab-pn/
 │   │   │   ├── MrDescViewerPlugin.ts # Plugin class extending BasePlugin
 │   │   │   ├── api.ts                # GitLab API for MR description
 │   │   │   ├── url.ts                # URL parsing utilities
-│   │   │   ├── nav-interceptor.ts    # SPA navigation detection (MAIN world)
 │   │   │   └── ui/
 │   │   │       ├── ToggleButton.ts   # Toggle button UI
 │   │   │       └── DescDialog.ts     # Description side panel dialog
-│   │   ├── inject/                   # Content script entry point
-│   │   │   └── index.ts              # Uses PluginManager
-│   │   └── popup/                    # Extension popup UI
+│   │   └── urgent-mr/
 │   │       ├── index.ts
-│   │       ├── index.html
-│   │       └── index.css
+│   │       ├── UrgentMrPlugin.ts
+│   │       ├── url.ts
+│   │       └── ui/UrgentCheckbox.ts
 │   ├── domain/
 │   │   ├── pn/                       # Priority rule types and helpers
 │   │   │   └── index.ts
@@ -87,22 +92,19 @@ gitlab-pn/
 │   │   └── debounce.ts
 │   └── styles/
 │       └── inject.css
+├── public/                           # Static assets (copied to output)
+│   └── img/
 ├── tests/
-│   └── domain/
-│       └── pn.spec.ts
-├── dist/                             # Build output
-├── img/
-├── manifest.json
-├── vite.config.ts
+├── wxt.config.ts                     # WXT configuration (replaces vite.config.ts + manifest.json)
 ├── vitest.config.ts
 ├── tsconfig.json
 └── package.json
 ```
 
-### Entry Points
-- `src/plugins/popup/index.ts` - Extension popup UI for configuring P1/P2/P3 replacement text and colors
-- `src/plugins/inject/index.ts` - Content script using PluginManager to orchestrate plugins
-- `src/plugins/mr-desc-viewer/nav-interceptor.ts` - SPA navigation interceptor (MAIN world)
+### Entry Points (WXT file-based)
+- `src/entrypoints/popup/index.html` - Extension popup UI for configuring P1/P2/P3 replacement text and colors
+- `src/entrypoints/inject.content.ts` - Content script using PluginManager to orchestrate plugins (ISOLATED world)
+- `src/entrypoints/nav-interceptor.content.ts` - SPA navigation interceptor (MAIN world)
 
 ### Plugin System
 
@@ -119,7 +121,7 @@ The plugin system consists of:
 1. Create a new directory in `src/plugins/`
 2. Create a plugin class extending `BasePlugin`
 3. Implement required methods (init, start, stop)
-4. Register in `src/plugins/inject/index.ts`
+4. Register in `src/entrypoints/inject.content.ts`
 
 Example:
 ```typescript
@@ -178,7 +180,7 @@ export class MyPlugin extends BasePlugin {
 **src/plugins/mr-desc-viewer/** - MR description side panel plugin
 - `MrDescViewerPlugin` - Plugin class with SPA navigation awareness
 - Fetches MR description via GitLab API and renders in a side dialog
-- `nav-interceptor.ts` runs in MAIN world to detect pushState/popstate navigation
+- SPA navigation detection via `src/entrypoints/nav-interceptor.content.ts` (MAIN world)
 - Auto-hides on Overview tab, shows toggle button on other MR tabs
 
 **src/services/gitlab/** - GitLab-specific DOM utilities
@@ -201,7 +203,7 @@ export class MyPlugin extends BasePlugin {
 - `@plugins/*` → `./src/plugins/*`
 
 ### Build Output
-Vite bundles to `dist/` with entry points at `src/plugins/popup/index.ts`, `src/plugins/inject/index.ts`, and `src/plugins/mr-desc-viewer/nav-interceptor.ts`.
+WXT builds to `dist/chrome-mv3/` (or `dist/<browser>-<mv>/`). Manifest is auto-generated from `wxt.config.ts` and entrypoint file exports.
 
 ## Storage Key Compatibility
 

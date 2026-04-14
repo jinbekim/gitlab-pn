@@ -55,7 +55,7 @@ export class PnRulePlugin extends BasePlugin {
     Object.entries(changes).forEach(([key, change]) => {
       if (key !== this.meta.enabledKey) {
         (this.pnMap as Record<string, unknown>)[key] = change.newValue;
-        tmpMap[key] = change.newValue;
+        tmpMap[key] = change.newValue as string;
       }
     });
 
