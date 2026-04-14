@@ -8,7 +8,9 @@ gitlab-pn is a Chrome extension (Manifest V3) that customizes GitLab merge reque
 
 1. **pn-rule**: Replaces priority labels (P1, P2, P3) in MR notes with customizable styled markers (text + colors)
 2. **rm-mr-filter**: Adds delete buttons to MR filter history items, removing them from both DOM and localStorage
-3. **mr-desc-viewer**: Shows MR description in a side panel on Changes/Commits tabs, with SPA navigation detection
+3. **pin-mr-filter**: Adds pin buttons to MR filter history items, pinned filters are displayed at the top of the list
+4. **mr-desc-viewer**: Shows MR description in a side panel on Changes/Commits tabs, with SPA navigation detection
+5. **urgent-mr**: Adds "Mark as urgent" checkbox on MR edit/new pages, toggling ❗️ prefix in the title
 
 ## Commands
 
@@ -36,6 +38,7 @@ gitlab-pn/
 │   │   │   ├── main.ts
 │   │   │   └── style.css
 │   │   ├── inject.content.ts         # Content script (ISOLATED world)
+│   │   ├── filter-bridge.content.ts  # Vue reactive state bridge (MAIN world)
 │   │   └── nav-interceptor.content.ts # SPA nav detection (MAIN world)
 │   ├── core/                         # Plugin system core
 │   │   ├── plugin/
@@ -59,7 +62,12 @@ gitlab-pn/
 │   │   │   ├── index.ts              # Plugin exports
 │   │   │   ├── RmMrFilterPlugin.ts   # Plugin class extending BasePlugin
 │   │   │   ├── utils.ts              # localStorage operations
+│   │   │   ├── pinStorage.ts         # Pinned filter localStorage operations
 │   │   │   └── ui/RemoveButton.ts
+│   │   ├── pin-mr-filter/
+│   │   │   ├── index.ts              # Plugin exports
+│   │   │   ├── PinMrFilterPlugin.ts  # Plugin class extending BasePlugin
+│   │   │   └── ui/PinButton.ts       # Pin toggle button UI
 │   │   ├── mr-desc-viewer/
 │   │   │   ├── index.ts              # Plugin exports
 │   │   │   ├── MrDescViewerPlugin.ts # Plugin class extending BasePlugin
@@ -104,6 +112,7 @@ gitlab-pn/
 ### Entry Points (WXT file-based)
 - `src/entrypoints/popup/index.html` - Extension popup UI for configuring P1/P2/P3 replacement text and colors
 - `src/entrypoints/inject.content.ts` - Content script using PluginManager to orchestrate plugins (ISOLATED world)
+- `src/entrypoints/filter-bridge.content.ts` - Vue reactive state bridge for filter deletion (MAIN world, accesses `RecentSearchesDropdownContent` Vue instance)
 - `src/entrypoints/nav-interceptor.content.ts` - SPA navigation interceptor (MAIN world)
 
 ### Plugin System
@@ -176,12 +185,26 @@ export class MyPlugin extends BasePlugin {
 - `RmMrFilterPlugin` - Plugin class handling lifecycle
 - Uses MutationObserver on filter dropdown button
 - Adds remove buttons to filter list items
+- Communicates with `filter-bridge.content.ts` (MAIN world) via `postMessage` for Vue reactive state sync
+- `pinStorage.ts` - Shared pinned filter localStorage operations (used by pin-mr-filter)
+
+**src/plugins/pin-mr-filter/** - Filter pin plugin
+- `PinMrFilterPlugin` - Plugin class for pinning filter history items
+- Adds pin toggle buttons to each filter item
+- Pinned items are visually reordered to top via CSS `order`
+- Re-injects missing pinned items that were removed from Vue state
+- Shares `pinStorage.ts` with rm-mr-filter
 
 **src/plugins/mr-desc-viewer/** - MR description side panel plugin
 - `MrDescViewerPlugin` - Plugin class with SPA navigation awareness
 - Fetches MR description via GitLab API and renders in a side dialog
 - SPA navigation detection via `src/entrypoints/nav-interceptor.content.ts` (MAIN world)
 - Auto-hides on Overview tab, shows toggle button on other MR tabs
+
+**src/plugins/urgent-mr/** - Urgent MR toggle plugin
+- `UrgentMrPlugin` - Adds "Mark as urgent" checkbox on MR new/edit pages
+- Toggles ❗️ prefix on MR title input
+- SPA-aware: watches URL changes via title observer, popstate, and nav events
 
 **src/services/gitlab/** - GitLab-specific DOM utilities
 - Centralized selectors in `selectors.ts` for easy version updates
@@ -211,6 +234,8 @@ Existing storage keys maintained for backwards compatibility:
 - `pn-rule-enabled` - Enable/disable pn-rule plugin
 - `rm-mr-filter-enabled` - Enable/disable rm-mr-filter plugin
 - `mr-desc-viewer-enabled` - Enable/disable mr-desc-viewer plugin
+- `pin-mr-filter-enabled` - Enable/disable pin-mr-filter plugin
+- `urgent-mr-enabled` - Enable/disable urgent-mr plugin
 - `p1`, `p2`, `p3` - Priority label replacement text
 - `p1-bg-color`, `p1-text-color`, etc. - Priority label colors
 
