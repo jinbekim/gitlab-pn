@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/jinbekim/gitlab-pn/compare/v1.4.1...v1.5.0) (2026-04-14)
+
+
+### Features
+
+* **pin-mr-filter:** 필터 핀 고정 플러그인 추가 및 Vue reactive 삭제 방식으로 전환 ([0cb62cb](https://github.com/jinbekim/gitlab-pn/commit/0cb62cb03efaa60617f900e80fd9dc5a8af26858))
+
 ### [1.4.1](https://github.com/jinbekim/gitlab-pn/compare/v1.4.0...v1.4.1) (2026-04-14)
 
 
