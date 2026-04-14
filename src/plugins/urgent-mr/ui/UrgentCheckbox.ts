@@ -8,7 +8,7 @@ export function createUrgentCheckbox(
   onChange: (checked: boolean) => void,
 ): HTMLDivElement {
   const wrapper = document.createElement('div');
-  wrapper.className = 'gl-form-checkbox custom-control custom-checkbox';
+  wrapper.className = 'gl-form-checkbox custom-control custom-checkbox gl-mt-3';
 
   const checkbox = document.createElement('input');
   checkbox.type = 'checkbox';

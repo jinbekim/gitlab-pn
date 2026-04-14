@@ -17,5 +17,5 @@ export const SELECTORS = {
 
   // MR form elements
   mrTitleInput: 'input#merge_request_title',
-  mrDraftCheckbox: '[data-testid="issuable-draft-checkbox"]',
+  mrDraftCheckbox: '#mark_as_draft',
 } as const;

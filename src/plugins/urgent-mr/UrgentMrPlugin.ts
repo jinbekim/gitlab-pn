@@ -135,15 +135,20 @@ export class UrgentMrPlugin extends BasePlugin {
       this.onCheckboxChange(checked),
     );
 
-    // Insert after "Mark as draft" checkbox area, or after the title form group
+    // Insert after "Mark as draft" checkbox wrapper inside the gl-pt-3 container
     const draftCheckbox = document.querySelector(SELECTORS.mrDraftCheckbox);
-    const insertTarget = draftCheckbox?.closest('.form-group, .gl-form-group, [class*="form-group"]')
-      ?? input.closest('.form-group, .gl-form-group, [class*="form-group"]');
+    const draftWrapper = draftCheckbox?.closest('.gl-form-checkbox');
 
-    if (insertTarget) {
-      insertTarget.after(this.checkboxWrapper);
+    if (draftWrapper) {
+      draftWrapper.after(this.checkboxWrapper);
     } else {
-      input.parentElement?.appendChild(this.checkboxWrapper);
+      // Fallback: append to the title input's parent container
+      const container = input.closest('[data-testid="issue-title-input-field"]');
+      if (container) {
+        container.appendChild(this.checkboxWrapper);
+      } else {
+        input.parentElement?.appendChild(this.checkboxWrapper);
+      }
     }
 
     // Sync checkbox state when user manually edits the title
