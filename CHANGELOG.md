@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.1](https://github.com/jinbekim/gitlab-pn/compare/v1.4.0...v1.4.1) (2026-04-14)
+
+
+### Bug Fixes
+
+* **urgent-mr:** Mark as draft 체크박스 바로 아래에 위치하도록 수정 ([d9c06fd](https://github.com/jinbekim/gitlab-pn/commit/d9c06fd7ba5571daef80cf725bad32b465360729))
+
+
+### Code Refactoring
+
+* Vite 수동 빌드에서 WXT 프레임워크로 마이그레이션 ([21e59cd](https://github.com/jinbekim/gitlab-pn/commit/21e59cdc6d8535ca01434e7b07a77a5a7f81eb37))
+
+
+### Documentation
+
+* README를 WXT 마이그레이션 및 urgent-mr 플러그인 반영하여 업데이트 ([4d27f5d](https://github.com/jinbekim/gitlab-pn/commit/4d27f5daea1ee078cfb37fe18df461416f524ac3))
+
 ## [1.4.0](https://github.com/jinbekim/gitlab-pn/compare/v1.2.0...v1.4.0) (2026-04-14)
 
 

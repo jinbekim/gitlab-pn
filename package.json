@@ -1,6 +1,6 @@
 {
   "name": "gitlab-pn",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "scripts": {
     "dev": "wxt",
     "build": "wxt build",
