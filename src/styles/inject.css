@@ -138,26 +138,3 @@ li[data-testid="dropdown-item"] {
   color: var(--gl-text-color-danger, #ec5941);
   opacity: 1;
 }
-
-/* ── Urgent MR Checkbox ── */
-
-.urgent-mr-checkbox-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 0;
-}
-
-.urgent-mr-checkbox-wrapper label {
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.urgent-mr-help-text {
-  width: 100%;
-  margin: 0;
-  font-size: 12px;
-  color: var(--gl-text-color-subtle, #89888d);
-  padding-left: 24px;
-}
