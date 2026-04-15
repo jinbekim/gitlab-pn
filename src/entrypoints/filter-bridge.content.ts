@@ -8,7 +8,7 @@ export default defineContentScript({
 
     window.addEventListener('message', (e) => {
       if (e.data?.type !== REMOVE_EVENT) return;
-      removeViaVue(e.data.searchText);
+      removeViaVue(e.data.searchText, e.data.index ?? -1);
     });
 
     function findVueInstance() {
@@ -32,7 +32,7 @@ export default defineContentScript({
       return text.replace(/\s*:\s*(!?=)\s*/g, ':$1');
     }
 
-    function removeViaVue(searchText: string): boolean {
+    function removeViaVue(searchText: string, index: number): boolean {
       const vm = findVueInstance();
       const recentSearches = vm?.$parent?.$data?.recentSearches;
       if (!Array.isArray(recentSearches)) {
@@ -40,18 +40,28 @@ export default defineContentScript({
         return false;
       }
 
-      const normalized = normalize(searchText);
-      const idx = recentSearches.findIndex((item: unknown) => {
-        if (typeof item === 'string') return item === normalized;
-        if (Array.isArray(item)) return normalize(item.join(' ')) === normalized;
-        return false;
-      });
-      if (idx === -1) {
+      // 1차: index로 직접 삭제 (DOM 순서 = 배열 순서)
+      let targetIdx = -1;
+      if (index >= 0 && index < recentSearches.length) {
+        targetIdx = index;
+      }
+
+      // 2차 fallback: 텍스트 매칭 (index 무효 시)
+      if (targetIdx === -1) {
+        const normalized = normalize(searchText);
+        targetIdx = recentSearches.findIndex((item: unknown) => {
+          if (typeof item === 'string') return item === normalized;
+          if (Array.isArray(item)) return normalize(item.join(' ')) === normalized;
+          return false;
+        });
+      }
+
+      if (targetIdx === -1) {
         window.postMessage({ type: '__rm_filter_done__', success: false }, '*');
         return false;
       }
 
-      recentSearches.splice(idx, 1);
+      recentSearches.splice(targetIdx, 1);
       syncLocalStorage(recentSearches);
 
       // Wait for Vue re-render, then notify ISOLATED world to re-inject custom elements
