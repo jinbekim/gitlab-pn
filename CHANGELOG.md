@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://github.com/jinbekim/gitlab-pn/compare/v1.4.1...v1.6.0) (2026-04-15)
+
+
+### Features
+
+* **pin-mr-filter:** 필터 핀 고정 플러그인 추가 및 Vue reactive 삭제 방식으로 전환 ([ac3ff01](https://github.com/jinbekim/gitlab-pn/commit/ac3ff0141ff7ea9696135aef538d1dc078e276b5))
+* **pin-mr-filter:** pin-mr-filter 플러그인 전체 제거 ([e65434f](https://github.com/jinbekim/gitlab-pn/commit/e65434f92471a22262a943a0eca78044b72db41a))
+
+
+### Bug Fixes
+
+* **rm-mr-filter:** 삭제 시 아래 항목들도 사라지는 버그 수정 ([653334d](https://github.com/jinbekim/gitlab-pn/commit/653334ddd5eafbe57cb05292771bca87c2fe60ea))
+* **rm-mr-filter:** 유사 필터 삭제 시 인덱스 기반 매칭 및 경합 조건 수정 ([4d1645b](https://github.com/jinbekim/gitlab-pn/commit/4d1645b2d1e672b49fa54f93bf448eba8c4375d7))
+* **rm-mr-filter:** 필터 삭제 후 새로고침 시 재등장 버그 수정 ([79aac2a](https://github.com/jinbekim/gitlab-pn/commit/79aac2a667aad9b9e153ee9bf02ce6ae8e491f93))
+* **rm-mr-filter:** Vue 삭제 실패 시 DOM fallback 제거 처리 추가 ([129da23](https://github.com/jinbekim/gitlab-pn/commit/129da23dfc084f9d3efbb7974968cf316dc65a2b))
+
+
+### Documentation
+
+* CLAUDE.md에 누락된 플러그인 및 엔트리포인트 문서 추가 ([eecbf19](https://github.com/jinbekim/gitlab-pn/commit/eecbf195e5e24faf686347968b29d2fd63992cbf))
+
 ## [1.5.0](https://github.com/jinbekim/gitlab-pn/compare/v1.4.1...v1.5.0) (2026-04-14)
 
 
