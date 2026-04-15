@@ -47,8 +47,4 @@ export function removeFilterByText(e: MouseEvent) {
     setFilterList(filterList);
   }
 
-  // Remove DOM element directly — ensures item disappears even if
-  // MAIN world Vue removal fails (e.g., Vue instance not found,
-  // or recentSearches item format mismatch)
-  li.remove();
 }

@@ -69,22 +69,31 @@ export class RmMrFilterPlugin extends BasePlugin {
     }
   };
 
+  private _isAddingButtons = false;
+
   private addRemoveButtonsToFilters(): void {
-    const filterList = this.getFilterListItems();
+    if (this._isAddingButtons) return;
+    this._isAddingButtons = true;
 
-    filterList?.forEach((filter) => {
-      if (filter.querySelector(this.SELECTORS.customRemoveButton)) {
-        return;
-      }
+    try {
+      const filterList = this.getFilterListItems();
 
-      const removeButton = RemoveButton();
-      filter.appendChild(removeButton);
+      filterList?.forEach((filter) => {
+        if (filter.querySelector(this.SELECTORS.customRemoveButton)) {
+          return;
+        }
 
-      removeButton.addEventListener('click', (e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        removeFilterByText(e);
+        const removeButton = RemoveButton();
+        filter.appendChild(removeButton);
+
+        removeButton.addEventListener('click', (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          removeFilterByText(e);
+        });
       });
-    });
+    } finally {
+      this._isAddingButtons = false;
+    }
   }
 }
