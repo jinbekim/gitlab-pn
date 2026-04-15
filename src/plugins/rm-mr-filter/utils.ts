@@ -1,5 +1,3 @@
-import { getPinnedList, setPinnedList } from './pinStorage';
-
 type FilterList = string[];
 
 export function getKey() {
@@ -43,11 +41,8 @@ export function removeFilterByText(e: MouseEvent) {
     setFilterList(filterList);
   }
 
-  // Remove from pinned list (extension-only storage)
-  const pinnedList = getPinnedList();
-  const pinnedIdx = pinnedList.indexOf(searchText);
-  if (pinnedIdx !== -1) {
-    pinnedList.splice(pinnedIdx, 1);
-    setPinnedList(pinnedList);
-  }
+  // Remove DOM element directly — ensures item disappears even if
+  // MAIN world Vue removal fails (e.g., Vue instance not found,
+  // or recentSearches item format mismatch)
+  li.remove();
 }

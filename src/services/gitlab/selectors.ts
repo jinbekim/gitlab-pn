@@ -14,9 +14,6 @@ export const SELECTORS = {
 
   // Custom button classes
   customRemoveButton: '.custom-rm-btn',
-  customPinButton: '.custom-pin-btn',
-  customPinnedInjected: '.custom-pinned-injected',
-
   // MR form elements
   mrTitleInput: 'input#merge_request_title',
   mrDraftCheckbox: '#mark_as_draft',

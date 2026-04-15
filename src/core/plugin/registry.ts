@@ -23,12 +23,6 @@ export const PLUGIN_REGISTRY: PluginInfo[] = [
     enabledKey: 'rm-mr-filter-enabled',
   },
   {
-    id: 'pin-mr-filter',
-    name: 'MR Filter Pinner',
-    description: 'MR 필터 히스토리 항목 핀 고정 기능',
-    enabledKey: 'pin-mr-filter-enabled',
-  },
-  {
     id: 'mr-desc-viewer',
     name: 'MR Description Viewer',
     description: 'Changes 탭에서 MR 설명 사이드 패널 보기',
