@@ -1,4 +1,4 @@
-type FilterList = string[];
+type FilterList = unknown[];
 
 export function getKey() {
   const url = new URL(window.location.href);
@@ -35,7 +35,13 @@ export function removeFilterByText(e: MouseEvent) {
   // Normalize "draft: = No" → "draft:=No" to match stored format
   const normalized = searchText.replace(/\s*:\s*(!?=)\s*/g, ':$1');
   const filterList = getFilterList();
-  const idx = filterList.indexOf(normalized);
+  const idx = filterList.findIndex((item: unknown) => {
+    if (typeof item === 'string') return item === normalized;
+    if (Array.isArray(item)) {
+      return (item as string[]).join(' ').replace(/\s*:\s*(!?=)\s*/g, ':$1') === normalized;
+    }
+    return false;
+  });
   if (idx !== -1) {
     filterList.splice(idx, 1);
     setFilterList(filterList);

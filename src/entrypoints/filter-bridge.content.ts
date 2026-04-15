@@ -57,11 +57,9 @@ export default defineContentScript({
     }
 
     function syncLocalStorage(searches: unknown[]) {
-      const pathMatch = window.location.pathname.match(
-        /\/([^/]+\/[^/]+)\/-\/merge_requests/,
-      );
-      if (!pathMatch) return;
-      const key = pathMatch[1] + '-merge-request-recent-searches';
+      const [project] = window.location.pathname.split('/-/');
+      if (!project) return;
+      const key = project.slice(1) + '-merge-request-recent-searches';
       localStorage.setItem(key, JSON.stringify(searches));
     }
   },
