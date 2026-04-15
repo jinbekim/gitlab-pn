@@ -47,4 +47,13 @@ export function removeFilterByText(e: MouseEvent) {
     setFilterList(filterList);
   }
 
+  // Vue 삭제 실패 시에만 DOM 직접 제거 (Vue 미관여이므로 vdom 충돌 없음)
+  const onResult = (ev: MessageEvent) => {
+    if (ev.data?.type !== '__rm_filter_done__') return;
+    window.removeEventListener('message', onResult);
+    if (!ev.data.success && li.parentNode) {
+      li.remove();
+    }
+  };
+  window.addEventListener('message', onResult);
 }

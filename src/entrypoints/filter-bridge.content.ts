@@ -35,7 +35,10 @@ export default defineContentScript({
     function removeViaVue(searchText: string): boolean {
       const vm = findVueInstance();
       const recentSearches = vm?.$parent?.$data?.recentSearches;
-      if (!Array.isArray(recentSearches)) return false;
+      if (!Array.isArray(recentSearches)) {
+        window.postMessage({ type: '__rm_filter_done__', success: false }, '*');
+        return false;
+      }
 
       const normalized = normalize(searchText);
       const idx = recentSearches.findIndex((item: unknown) => {
@@ -43,14 +46,17 @@ export default defineContentScript({
         if (Array.isArray(item)) return normalize(item.join(' ')) === normalized;
         return false;
       });
-      if (idx === -1) return false;
+      if (idx === -1) {
+        window.postMessage({ type: '__rm_filter_done__', success: false }, '*');
+        return false;
+      }
 
       recentSearches.splice(idx, 1);
       syncLocalStorage(recentSearches);
 
       // Wait for Vue re-render, then notify ISOLATED world to re-inject custom elements
       vm!.$nextTick(() => {
-        window.postMessage({ type: '__rm_filter_done__' }, '*');
+        window.postMessage({ type: '__rm_filter_done__', success: true }, '*');
       });
 
       return true;
